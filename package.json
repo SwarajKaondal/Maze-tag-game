@@ -1,0 +1,29 @@
+{
+  "name": "cg-final-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "http": "npx http-server --port 3000 --cors",
+    "socket": "node wsMain.js",
+    "server": "concurrently --names CLIENT,SERVER --prefix-colors yellow,blue --kill-others \"npm run http\" \"npm run socket\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.ncsu.edu/skakird/cg-final-game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "http-server": "^14.1.1",
+    "npx": "^10.2.2",
+    "query-string": "^8.1.0",
+    "ws": "^8.13.0"
+  }
+}
