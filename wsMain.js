@@ -13,9 +13,6 @@ const wsServer = new WebSocketServer({
   noServer: true,
   path: "/ws",
 });
-wsServer.on("connection", (socket) => {
-  socket.on("message", (message) => console.log(message));
-});
 
 const server = app.listen(3001);
 server.on("upgrade", (request, socket, head) => {

@@ -1,11 +1,11 @@
 const trianglesFile = [
   {
     material: {
-      ambient: [0.1, 0.1, 0.1],
-      diffuse: [0.5, 0.5, 0.5],
-      specular: [0.3, 0.3, 0.3],
+      ambient: [0.2, 0.0, 0.0],
+      diffuse: [0.5, 0.0, 0.0],
+      specular: [0.3, 0.0, 0.0],
       n: 5,
-      alpha: 0.9,
+      alpha: 0.0,
       texture: "naruto1.png",
     },
     vertices: [
