@@ -372,7 +372,7 @@ function setupShaders() {
             if (uAlpha == 0.0) {
               t = textureVector.a;
             } 
-            gl_FragColor = vec4(colorOut*textureVector.rgb, textureVector.a*uAlpha);
+            gl_FragColor = vec4(textureVector.rgb, textureVector.a*uAlpha);
         }
     `;
 
@@ -636,7 +636,7 @@ function isPowerOf2(value) {
 let texturesList = [];
 
 function loadSortedObjects() {
-  let loadedInputTriangles = trianglesFile;
+  let loadedInputTriangles = walls;
   loadedInputTriangles = loadedInputTriangles.map((x) => ({
     ...x,
     xAxis: vec3.create(),
