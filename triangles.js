@@ -113,7 +113,7 @@ let walls = [
       specular: [0.0, 0.0, 0.0],
       n: 5,
       alpha: 1.0,
-      texture: "ground.jpeg",
+      texture: "hexFloor.jpg",
     },
     vertices: [
       [0, 0, 0],
@@ -129,9 +129,9 @@ let walls = [
     ],
     uvs: [
       [0, 0],
-      [0, 0.01],
-      [0.01, 0],
-      [0.01, 0.01],
+      [0, 25],
+      [25, 0],
+      [25, 25],
     ],
     triangles: [
       [0, 1, 2],
@@ -144,6 +144,16 @@ colIndex = 0;
 for (let i = 0; i < maze.length; i++) {
   for (let j = 0; j < maze.length; j++) {
     if (maze[i][j] == "#") {
+      c = {
+        rightDownBack: [blockLength * i, 0, blockLength * j],
+        rightUpBack: [blockLength * i, blockHeight, blockLength * j],
+        leftDownBack: [blockLength * (i + 1), 0, blockLength * j],
+        leftUpBack: [blockLength * (i + 1), blockHeight, blockLength * j],
+        rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
+        rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
+        leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
+        leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
+      };
       wall = {
         material: {
           ambient: [0.2, 0.0, 0.0],
@@ -151,51 +161,120 @@ for (let i = 0; i < maze.length; i++) {
           specular: [0.3, 0.0, 0.0],
           n: 5,
           alpha: 1.0,
-          texture: "wall.jpg",
+          texture: "brickWall.webp",
         },
         vertices: [
-          [blockLength * i, 0, blockLength * j],
-          [blockLength * i, blockHeight, blockLength * j],
-          [blockLength * (i + 1), 0, blockLength * j],
-          [blockLength * (i + 1), blockHeight, blockLength * j],
-          [blockLength * i, 0, blockLength * (j + 1)],
-          [blockLength * i, blockHeight, blockLength * (j + 1)],
-          [blockLength * (i + 1), 0, blockLength * (j + 1)],
-          [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
+          //Back Face
+          c.rightDownBack,
+          c.rightUpBack,
+          c.leftDownBack,
+          c.leftUpBack,
+          //Front Face
+          c.rightDownForward,
+          c.rightUpForward,
+          c.leftDownForward,
+          c.leftUpForward,
+          //Top Face
+          c.rightUpBack,
+          c.rightUpForward,
+          c.leftUpBack,
+          c.leftUpForward,
+          //Bottom Face
+          c.rightDownBack,
+          c.rightDownForward,
+          c.leftDownBack,
+          c.leftDownForward,
+          //Right Face
+          c.rightUpBack,
+          c.rightUpForward,
+          c.rightDownBack,
+          c.rightDownForward,
+          //Left Face
+          c.leftUpBack,
+          c.leftUpForward,
+          c.leftDownBack,
+          c.leftDownForward,
         ],
         normals: [
-          [-0.5774, -0.5774, 0.5774],
-          [-0.5774, 0.5774, 0.5774],
-          [0.5774, -0.5774, 0.5774],
-          [0.5774, 0.5774, 0.5774],
-          [-0.5774, -0.5774, -0.5774],
-          [-0.5774, 0.5774, -0.5774],
-          [0.5774, -0.5774, -0.5774],
-          [0.5774, 0.5774, -0.5774],
+          [0, 0, -1],
+          [0, 0, -1],
+          [0, 0, -1],
+          [0, 0, -1],
+
+          [0, 0, 1],
+          [0, 0, 1],
+          [0, 0, 1],
+          [0, 0, 1],
+
+          [0, 1, 0],
+          [0, 1, 0],
+          [0, 1, 0],
+          [0, 1, 0],
+
+          [0, -1, 0],
+          [0, -1, 0],
+          [0, -1, 0],
+          [0, -1, 0],
+
+          [1, 0, 0],
+          [1, 0, 0],
+          [1, 0, 0],
+          [1, 0, 0],
+
+          [-1, 0, 0],
+          [-1, 0, 0],
+          [-1, 0, 0],
+          [-1, 0, 0],
         ],
         uvs: [
           [1, 1],
           [1, 0],
           [0, 1],
           [0, 0],
-          [0, 1],
-          [0, 0],
+
           [1, 1],
           [1, 0],
+          [0, 1],
+          [0, 0],
+
+          [1, 1],
+          [0, 1],
+          [1, 0],
+          [0, 0],
+
+          [1, 1],
+          [0, 1],
+          [1, 0],
+          [0, 0],
+
+          [1, 1],
+          [0, 1],
+          [1, 0],
+          [0, 0],
+
+          [1, 1],
+          [0, 1],
+          [1, 0],
+          [0, 0],
         ],
         triangles: [
           [0, 1, 2],
           [1, 2, 3],
+
           [4, 5, 6],
           [5, 6, 7],
-          [0, 1, 4],
-          [1, 4, 5],
-          [2, 3, 6],
-          [3, 6, 7],
-          [1, 3, 7],
-          [1, 7, 5],
-          [0, 2, 6],
-          [0, 6, 4],
+
+          [8, 9, 10],
+          [9, 10, 11],
+
+          [12, 13, 14],
+          [13, 14, 15],
+
+          [16, 17, 18],
+          [17, 18, 19],
+
+          [20, 21, 22],
+          [21, 22, 23],
         ],
       };
       walls.push(wall);

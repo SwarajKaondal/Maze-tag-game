@@ -24,6 +24,7 @@ var normalBuffers = []; // this contains normal component lists by set, in tripl
 var triSetSizes = []; // this contains the size of each triangle set
 var triangleBuffers = []; // lists of indices into vertexBuffers by set, in triples
 var viewDelta = 0.02; // how much to displace view with each key press
+var textureMap = {};
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -590,6 +591,10 @@ function renderModels() {
 // When the image finished loading copy it into the texture.
 //
 function loadTexture(gl, url) {
+  if (textureMap.hasOwnProperty(url)) {
+    console.log("existing Texture", url);
+    return textureMap[url];
+  }
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -608,6 +613,7 @@ function loadTexture(gl, url) {
   image.src = url;
 
   image.onload = () => {
+    console.log("new Texture,", url);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
 
@@ -620,12 +626,12 @@ function loadTexture(gl, url) {
     } else {
       // No, it's not a power of 2. Turn off mips and set
       // wrapping to clamp to edge
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     }
   };
-
+  textureMap[url] = texture;
   return texture;
 }
 
