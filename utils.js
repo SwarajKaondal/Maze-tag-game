@@ -24,7 +24,7 @@ var vertexBuffers = []; // this contains vertex coordinate lists by set, in trip
 var normalBuffers = []; // this contains normal component lists by set, in triples
 var triSetSizes = []; // this contains the size of each triangle set
 var triangleBuffers = []; // lists of indices into vertexBuffers by set, in triples
-var viewDelta = 0.03; // how much to displace view with each key press
+var viewDelta = 0.01; // how much to displace view with each key press
 
 /* shader parameter locations */
 var vPosAttribLoc; // where to put position for vertex shader
@@ -37,6 +37,7 @@ var alphaULoc;
 var shininessULoc; // where to put specular exponent for fragment shader
 var textureAttribLoc;
 let vNormAttribLoc;
+const MOUSE_SENS = 150;
 
 let r = 0;
 const dirEnum = { NEGATIVE: -1, POSITIVE: 1 }; // enumerated rotation direction
@@ -98,6 +99,35 @@ function rotateModel(modelId, axis, direction) {
     newRotation
   );
 } // end rotate model
+document.onmousemove = handleMouseMove;
+
+function horizontalEyeRotate(rotateValue) {
+  let lookAt = vec3.create();
+  let viewRight = vec3.create();
+  let temp = vec3.create(); // lookat, right & temp vectors
+
+  lookAt = vec3.normalize(lookAt, vec3.subtract(temp, Center, Eye)); // get lookat vector
+  viewRight = vec3.normalize(viewRight, vec3.cross(temp, lookAt, Up)); // get view right vector
+  Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, rotateValue));
+}
+
+function verticalEyeRotate(rotateValue) {
+  let lookAt = vec3.create();
+  let viewRight = vec3.create();
+  let temp = vec3.create();
+
+  lookAt = vec3.normalize(lookAt, vec3.subtract(temp, Center, Eye)); // get lookat vector
+  viewRight = vec3.normalize(viewRight, vec3.cross(temp, lookAt, Up));
+
+  Center = vec3.add(Center, Center, vec3.scale(temp, Up, rotateValue));
+  vec3.cross(vec3.create(), viewRight, vec3.subtract(lookAt, Center, Eye));
+}
+
+function handleMouseMove(event) {
+  console.log("movement: ", event.movementX, event.movementY);
+  horizontalEyeRotate(event.movementX / MOUSE_SENS);
+  verticalEyeRotate(-event.movementY / MOUSE_SENS);
+}
 // does stuff when keys are pressed
 function handleKeyDown(event) {
   // set up needed view params
@@ -146,8 +176,16 @@ function handleKeyDown(event) {
           vec3.subtract(lookAt, Center, Eye)
         ); /* global side effect */
       } else {
-        Eye = vec3.add(Eye, Eye, vec3.scale(temp, lookAt, viewDelta));
-        Center = vec3.add(Center, Center, vec3.scale(temp, lookAt, viewDelta));
+        Eye = vec3.add(
+          Eye,
+          Eye,
+          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
+        );
+        Center = vec3.add(
+          Center,
+          Center,
+          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
+        );
       } // end if shift not pressed
       break;
     case "KeyQ": // translate view up, rotate counterclockwise with shift
@@ -235,6 +273,13 @@ function setupWebGL() {
 
   // Get the canvas and context
   var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
+  canvas.addEventListener("click", async () => {
+    document.addEventListener("mousemove", handleMouseMove, false);
+
+    await canvas.requestPointerLock();
+  });
+  canvas.click();
+
   gl = canvas.getContext("webgl"); // get a webgl object from it
 
   try {
@@ -810,7 +855,6 @@ function loadSortedObjects() {
   //   );
   // }
 
-  console.log(loadedInputTriangles);
   loadedInputTriangles.sort((a, b) => b.material.alpha - a.material.alpha);
   let opaqueObjects = [];
   let transparentObjects = [];
