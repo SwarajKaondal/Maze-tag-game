@@ -74,8 +74,10 @@ function createMaze() {
 
 maze = createMaze();
 
-blockLength = 0.5;
-blockHeight = 0.5;
+var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
+
+blockLength = canvas.width / 1000;
+blockHeight = blockLength;
 let walls = [
   {
     material: {

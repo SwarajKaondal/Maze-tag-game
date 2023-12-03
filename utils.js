@@ -4,7 +4,7 @@
 const INPUT_TRIANGLES_URL = "triangles.json"; // triangles file loc
 // triangles file loc
 const INPUT_ELLIPSOIDS_URL = "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
-var defaultEye = vec3.fromValues(0.25, 0.25, 0.25); // default eye position in world space
+var defaultEye = vec3.fromValues(blockLength / 2, blockLength / 2, blockLength / 2); // default eye position in world space
 var defaultCenter = vec3.fromValues(0.25, 0.25, 0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0, 1, 0); // default view up vector
 var lightAmbient = vec3.fromValues(1, 1, 1); // default light ambient emission
@@ -23,7 +23,6 @@ var vertexBuffers = []; // this contains vertex coordinate lists by set, in trip
 var normalBuffers = []; // this contains normal component lists by set, in triples
 var triSetSizes = []; // this contains the size of each triangle set
 var triangleBuffers = []; // lists of indices into vertexBuffers by set, in triples
-var viewDelta = 0.014; // how much to displace view with each key press
 var textureMap = {};
 
 /* shader parameter locations */
@@ -153,18 +152,32 @@ function handleKeyDown(event) {
   switch (event.code) {
     // view change
     case "KeyD": // translate view left, rotate left with shift
-      Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, viewDelta));
-      if (footstepAudio.paused) {
-        footstepAudio.play();
+      if (!event.getModifierState("Shift")) {
+        if (footstepAudio.paused) {
+          footstepAudio.play();
+        }
+        let tempEye = vec3.create();
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, viewDelta));
+        if (!getIntersectionDirection(tempEye)) {
+          Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, viewDelta));
+
+          Eye = tempEye;
+        }
       }
-      if (!event.getModifierState("Shift")) Eye = vec3.add(Eye, Eye, vec3.scale(temp, viewRight, viewDelta));
       break;
     case "KeyA": // translate view right, rotate right with shift
-      Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, -viewDelta));
-      if (footstepAudio.paused) {
-        footstepAudio.play();
+      if (!event.getModifierState("Shift")) {
+        if (footstepAudio.paused) {
+          footstepAudio.play();
+        }
+        let tempEye = vec3.create();
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, -viewDelta));
+        if (!getIntersectionDirection(tempEye)) {
+          Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, -viewDelta));
+          Eye = tempEye;
+        }
       }
-      if (!event.getModifierState("Shift")) Eye = vec3.add(Eye, Eye, vec3.scale(temp, viewRight, -viewDelta));
+
       break;
     case "KeyS": // translate view backward, rotate up with shift
       if (event.getModifierState("Shift")) {
@@ -174,8 +187,14 @@ function handleKeyDown(event) {
         if (footstepAudio.paused) {
           footstepAudio.play();
         }
-        Eye = vec3.add(Eye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
-        Center = vec3.add(Center, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        let tempEye = vec3.create();
+        let tempCenter = vec3.create();
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        if (!getIntersectionDirection(tempEye)) {
+          Eye = tempEye;
+          Center = tempCenter;
+        }
       } // end if shift not pressed
       break;
     case "KeyW": // translate view forward, rotate down with shift
@@ -186,8 +205,17 @@ function handleKeyDown(event) {
         if (footstepAudio.paused) {
           footstepAudio.play();
         }
-        Eye = vec3.add(Eye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
-        Center = vec3.add(Center, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        let tempEye = vec3.create();
+        let tempCenter = vec3.create();
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        if (!getIntersectionDirection(tempEye)) {
+          Eye = tempEye;
+          Center = tempCenter;
+        } else {
+          pressKey("KeyA");
+          pressKey("KeyD");
+        }
       } // end if shift not pressed
       break;
     case "KeyQ": // translate view up, rotate counterclockwise with shift
@@ -246,6 +274,8 @@ function handleKeyDown(event) {
 
 var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
 const aspectRatio = canvas.width / canvas.height;
+const MOVEMENT_THRESHOLD = 0.15 * aspectRatio;
+var viewDelta = (2.5 * canvas.width) / 100000; // how much to displace view with each key press
 
 // set up the webGL environment
 function setupWebGL() {
@@ -605,7 +635,7 @@ function renderModels() {
 
   // set up projection and view
   // mat4.fromScaling(hMatrix,vec3.fromValues(-1,1,1)); // create handedness matrix
-  mat4.perspective(pMatrix, 0.4 * Math.PI, aspectRatio, 0.1, 10); // create projection matrix
+  mat4.perspective(pMatrix, 0.4 * Math.PI, aspectRatio, 0.1, blockLength * maze.length + 5); // create projection matrix
   mat4.lookAt(vMatrix, Eye, Center, Up); // create view matrix
   mat4.multiply(pvMatrix, pvMatrix, pMatrix); // projection
   mat4.multiply(pvMatrix, pvMatrix, vMatrix); // projection * view
@@ -789,3 +819,49 @@ function main() {
   };
   // draw the triangles using webGL
 } // end main
+
+function getIntersectionDirection(newEye) {
+  let eyeGrid = [Math.floor(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)];
+  let blocks = checkAdjacentBlocks(maze, eyeGrid);
+  let boxPosition = [newEye[2] % blockLength, newEye[0] % blockLength];
+  // console.log(boxPosition, blocks);
+  if (blocks.forward && boxPosition[1] + MOVEMENT_THRESHOLD >= blockLength) {
+    // console.log("blocking forward");
+    return true;
+  }
+  if (blocks.back && boxPosition[1] - MOVEMENT_THRESHOLD <= 0) {
+    // console.log("blocking back");
+    return true;
+  }
+  if (blocks.right && boxPosition[0] - MOVEMENT_THRESHOLD <= 0) {
+    // console.log("blocking right");
+    return true;
+  }
+  if (blocks.left && boxPosition[0] + MOVEMENT_THRESHOLD >= blockLength) {
+    // console.log("blocking left");
+    return true;
+  }
+  return false;
+}
+
+function checkAdjacentBlocks(mazeArray, currPosition) {
+  let adjacentBlocks = {
+    left: false,
+    right: false,
+    forward: false,
+    back: false,
+  };
+  if (currPosition[1] > 0 && mazeArray[currPosition[1] - 1][currPosition[0]] === "#") {
+    adjacentBlocks.back = true;
+  }
+  if (currPosition[1] < mazeArray.length - 1 && mazeArray[currPosition[1] + 1][currPosition[0]] === "#") {
+    adjacentBlocks.forward = true;
+  }
+  if (currPosition[0] > 0 && mazeArray[currPosition[1]][currPosition[0] - 1] === "#") {
+    adjacentBlocks.right = true;
+  }
+  if (currPosition[0] < mazeArray[0].length - 1 && mazeArray[currPosition[1]][currPosition[0] + 1] === "#") {
+    adjacentBlocks.left = true;
+  }
+  return adjacentBlocks;
+}
