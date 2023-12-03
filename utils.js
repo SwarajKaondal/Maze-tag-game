@@ -23,7 +23,7 @@ var vertexBuffers = []; // this contains vertex coordinate lists by set, in trip
 var normalBuffers = []; // this contains normal component lists by set, in triples
 var triSetSizes = []; // this contains the size of each triangle set
 var triangleBuffers = []; // lists of indices into vertexBuffers by set, in triples
-var viewDelta = 0.01; // how much to displace view with each key press
+var viewDelta = 0.014; // how much to displace view with each key press
 var textureMap = {};
 
 /* shader parameter locations */
@@ -37,7 +37,7 @@ var alphaULoc;
 var shininessULoc; // where to put specular exponent for fragment shader
 var textureAttribLoc;
 let vNormAttribLoc;
-const MOUSE_SENS = 150;
+const MOUSE_SENS = 500;
 
 let r = 0;
 const dirEnum = { NEGATIVE: -1, POSITIVE: 1 }; // enumerated rotation direction
@@ -140,8 +140,8 @@ function handleKeyDown(event) {
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, viewDelta));
         Up = vec3.cross(Up, viewRight, vec3.subtract(lookAt, Center, Eye)); /* global side effect */
       } else {
-        Eye = vec3.add(Eye, Eye, vec3.scale(temp, lookAt, -viewDelta));
-        Center = vec3.add(Center, Center, vec3.scale(temp, lookAt, -viewDelta));
+        Eye = vec3.add(Eye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        Center = vec3.add(Center, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
       } // end if shift not pressed
       break;
     case "KeyW": // translate view forward, rotate down with shift
@@ -565,7 +565,7 @@ function renderModels() {
 
   // set up projection and view
   // mat4.fromScaling(hMatrix,vec3.fromValues(-1,1,1)); // create handedness matrix
-  mat4.perspective(pMatrix, 0.5 * Math.PI, 1, 0.1, 10); // create projection matrix
+  mat4.perspective(pMatrix, 0.4 * Math.PI, 1, 0.1, 10); // create projection matrix
   mat4.lookAt(vMatrix, Eye, Center, Up); // create view matrix
   mat4.multiply(pvMatrix, pvMatrix, pMatrix); // projection
   mat4.multiply(pvMatrix, pvMatrix, vMatrix); // projection * view

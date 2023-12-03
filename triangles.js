@@ -1,38 +1,3 @@
-const trianglesFile = [
-  {
-    material: {
-      ambient: [0.2, 0.0, 0.0],
-      diffuse: [0.5, 0.0, 0.0],
-      specular: [0.3, 0.0, 0.0],
-      n: 5,
-      alpha: 0.0,
-      texture: "naruto1.png",
-    },
-    vertices: [
-      [0.3, 0.3, -0.15],
-      [0.3, 0.7, -0.15],
-      [0.6, 0.7, -0.15],
-      [0.6, 0.3, -0.15],
-    ],
-    normals: [
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-    ],
-    uvs: [
-      [0, 0],
-      [0, 1],
-      [1, 1],
-      [1, 0],
-    ],
-    triangles: [
-      [0, 1, 2],
-      [2, 3, 0],
-    ],
-  },
-];
-
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -113,7 +78,7 @@ let walls = [
       specular: [0.0, 0.0, 0.0],
       n: 5,
       alpha: 1.0,
-      texture: "hexFloor.jpg",
+      texture: "floor2.png",
     },
     vertices: [
       [0, 0, 0],
@@ -129,9 +94,41 @@ let walls = [
     ],
     uvs: [
       [0, 0],
-      [0, 25],
-      [25, 0],
-      [25, 25],
+      [0, maze.length],
+      [maze.length, 0],
+      [maze.length, maze.length],
+    ],
+    triangles: [
+      [0, 1, 2],
+      [1, 2, 3],
+    ],
+  },
+  {
+    material: {
+      ambient: [0.0, 0.0, 0.0],
+      diffuse: [0.0, 0.0, 0.0],
+      specular: [0.0, 0.0, 0.0],
+      n: 5,
+      alpha: 1.0,
+      texture: "light1.jpg",
+    },
+    vertices: [
+      [0, blockHeight, 0],
+      [0, blockHeight, maze.length * blockLength],
+      [maze.length * blockLength, blockHeight, 0],
+      [maze.length * blockLength, blockHeight, maze.length * blockLength],
+    ],
+    normals: [
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+    ],
+    uvs: [
+      [0, 0],
+      [0, maze.length],
+      [maze.length, 0],
+      [maze.length, maze.length],
     ],
     triangles: [
       [0, 1, 2],
@@ -161,7 +158,7 @@ for (let i = 0; i < maze.length; i++) {
           specular: [0.3, 0.0, 0.0],
           n: 5,
           alpha: 1.0,
-          texture: "brickWall.webp",
+          texture: "wall2.png",
         },
         vertices: [
           //Back Face
@@ -227,15 +224,15 @@ for (let i = 0; i < maze.length; i++) {
           [-1, 0, 0],
         ],
         uvs: [
-          [1, 1],
           [1, 0],
-          [0, 1],
+          [1, 1],
           [0, 0],
+          [0, 1],
 
-          [1, 1],
           [1, 0],
-          [0, 1],
+          [1, 1],
           [0, 0],
+          [0, 1],
 
           [1, 1],
           [0, 1],
