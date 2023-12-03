@@ -5,8 +5,9 @@ function getRandomInt(min, max) {
 function createMaze() {
   girdSize = 10;
   grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
-  maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
-  console.log(grid);
+  maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
+    new Array(2 * girdSize - 1).fill("#")
+  );
   queue = [[0, 0]];
   grid[0][0] = 1;
   maze[0][0] = ".";
@@ -149,7 +150,11 @@ for (let i = 0; i < maze.length; i++) {
         rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
         rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
         leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
-        leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
+        leftUpForward: [
+          blockLength * (i + 1),
+          blockHeight,
+          blockLength * (j + 1),
+        ],
       };
       wall = {
         material: {
