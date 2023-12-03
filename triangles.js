@@ -11,7 +11,6 @@ function createMaze() {
   maze[0][0] = ".";
   do {
     currNode = queue[queue.length - 1];
-    // console.log(currNode);
     options = [];
     if (currNode[0] + 1 < girdSize && grid[currNode[0] + 1][currNode[1]] != 1) {
       options.push("Right");
@@ -27,9 +26,6 @@ function createMaze() {
     }
 
     if (options.length == 0) {
-      // console.log("currNode", currNode);
-      // console.log("maze", JSON.parse(JSON.stringify(maze)));
-      // console.log("queue", [...queue]);
       queue.pop();
       continue;
     }
@@ -62,6 +58,17 @@ function createMaze() {
         break;
     }
   } while (queue.length > 0);
+
+  for (let i = 0; i < maze.length; i++) {
+    for (let j = 0; j < maze.length; j++) {
+      if (maze[i][j] == "#") {
+        if (Math.random() < 0.1) {
+          maze[i][j] = ".";
+        }
+      }
+    }
+  }
+
   return maze;
 }
 
@@ -219,6 +226,38 @@ let walls = [
 
       [12, 13, 14],
       [13, 14, 15],
+    ],
+  },
+  {
+    material: {
+      ambient: [0.2, 0.0, 0.0],
+      diffuse: [0.5, 0.0, 0.0],
+      specular: [0.3, 0.0, 0.0],
+      n: 5,
+      alpha: 1.0,
+      texture: "door1.jpg",
+    },
+    vertices: [
+      [0, 0, 0.0005],
+      [0, blockHeight, 0.0005],
+      [blockLength, 0, 0.0005],
+      [blockLength, blockHeight, 0.0005],
+    ],
+    normals: [
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+    ],
+    uvs: [
+      [0, 0],
+      [0, 1],
+      [1, 0],
+      [1, 1],
+    ],
+    triangles: [
+      [0, 1, 2],
+      [1, 2, 3],
     ],
   },
 ];

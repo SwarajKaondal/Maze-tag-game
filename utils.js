@@ -38,6 +38,7 @@ var shininessULoc; // where to put specular exponent for fragment shader
 var textureAttribLoc;
 let vNormAttribLoc;
 const MOUSE_SENS = 500;
+var footstepAudio;
 
 let r = 0;
 const dirEnum = { NEGATIVE: -1, POSITIVE: 1 }; // enumerated rotation direction
@@ -114,6 +115,32 @@ function handleMouseMove(event) {
   horizontalEyeRotate(event.movementX / MOUSE_SENS);
   verticalEyeRotate(-event.movementY / MOUSE_SENS);
 }
+
+function handleKeyUp(event) {
+  switch (event.code) {
+    case "KeyW":
+      if (!footstepAudio.paused) {
+        footstepAudio.pause();
+      }
+      break;
+    case "KeyS":
+      if (!footstepAudio.paused) {
+        footstepAudio.pause();
+      }
+      break;
+    case "KeyA":
+      if (!footstepAudio.paused) {
+        footstepAudio.pause();
+      }
+      break;
+    case "KeyD":
+      if (!footstepAudio.paused) {
+        footstepAudio.pause();
+      }
+      break;
+  }
+}
+
 // does stuff when keys are pressed
 function handleKeyDown(event) {
   // set up needed view params
@@ -123,15 +150,20 @@ function handleKeyDown(event) {
   lookAt = vec3.normalize(lookAt, vec3.subtract(temp, Center, Eye)); // get lookat vector
   viewRight = vec3.normalize(viewRight, vec3.cross(temp, lookAt, Up)); // get view right vector
 
-  console.log(event);
   switch (event.code) {
     // view change
     case "KeyD": // translate view left, rotate left with shift
       Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, viewDelta));
+      if (footstepAudio.paused) {
+        footstepAudio.play();
+      }
       if (!event.getModifierState("Shift")) Eye = vec3.add(Eye, Eye, vec3.scale(temp, viewRight, viewDelta));
       break;
     case "KeyA": // translate view right, rotate right with shift
       Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, -viewDelta));
+      if (footstepAudio.paused) {
+        footstepAudio.play();
+      }
       if (!event.getModifierState("Shift")) Eye = vec3.add(Eye, Eye, vec3.scale(temp, viewRight, -viewDelta));
       break;
     case "KeyS": // translate view backward, rotate up with shift
@@ -139,6 +171,9 @@ function handleKeyDown(event) {
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, viewDelta));
         Up = vec3.cross(Up, viewRight, vec3.subtract(lookAt, Center, Eye)); /* global side effect */
       } else {
+        if (footstepAudio.paused) {
+          footstepAudio.play();
+        }
         Eye = vec3.add(Eye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
         Center = vec3.add(Center, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
       } // end if shift not pressed
@@ -148,9 +183,9 @@ function handleKeyDown(event) {
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, -viewDelta));
         Up = vec3.cross(Up, viewRight, vec3.subtract(lookAt, Center, Eye)); /* global side effect */
       } else {
-        // var audio = new Audio("./sounds/footsteps.wav");
-        // console.log(audio);
-        // audio.play();
+        if (footstepAudio.paused) {
+          footstepAudio.play();
+        }
         Eye = vec3.add(Eye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
         Center = vec3.add(Center, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
       } // end if shift not pressed
@@ -216,6 +251,7 @@ const aspectRatio = canvas.width / canvas.height;
 function setupWebGL() {
   // Set up keys
   document.onkeydown = handleKeyDown; // call this when key pressed
+  document.onkeyup = handleKeyUp;
 
   // var imageCanvas = document.getElementById("myImageCanvas"); // create a 2d canvas
   // var cw = imageCanvas.width,
@@ -569,7 +605,7 @@ function renderModels() {
 
   // set up projection and view
   // mat4.fromScaling(hMatrix,vec3.fromValues(-1,1,1)); // create handedness matrix
-  mat4.perspective(pMatrix, 0.5 * Math.PI, aspectRatio, 0.1, 10); // create projection matrix
+  mat4.perspective(pMatrix, 0.4 * Math.PI, aspectRatio, 0.1, 10); // create projection matrix
   mat4.lookAt(vMatrix, Eye, Center, Up); // create view matrix
   mat4.multiply(pvMatrix, pvMatrix, pMatrix); // projection
   mat4.multiply(pvMatrix, pvMatrix, vMatrix); // projection * view
@@ -633,7 +669,6 @@ function renderModels() {
 //
 function loadTexture(gl, url) {
   if (textureMap.hasOwnProperty(url)) {
-    console.log("existing Texture", url);
     return textureMap[url];
   }
   const texture = gl.createTexture();
@@ -654,7 +689,6 @@ function loadTexture(gl, url) {
   image.src = url;
 
   image.onload = () => {
-    console.log("new Texture,", url);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
 
@@ -728,6 +762,7 @@ function loadSortedObjects() {
 function loadStuff() {
   loadSortedObjects();
   loadModels();
+  footstepAudio = new Audio("./sounds/footsteps.wav");
 }
 let socket;
 let screenId = (Math.random() + 1).toString(36).substring(7);
