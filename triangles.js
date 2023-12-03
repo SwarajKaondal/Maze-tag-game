@@ -5,9 +5,7 @@ function getRandomInt(min, max) {
 function createMaze() {
   girdSize = 10;
   grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
-  maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
-    new Array(2 * girdSize - 1).fill("#")
-  );
+  maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
   queue = [[0, 0]];
   grid[0][0] = 1;
   maze[0][0] = ".";
@@ -81,7 +79,7 @@ let walls = [
       specular: [0.0, 0.0, 0.0],
       n: 5,
       alpha: 1.0,
-      texture: "floor2.png",
+      texture: "floor4.png",
     },
     vertices: [
       [0, 0, 0],
@@ -113,7 +111,7 @@ let walls = [
       specular: [0.0, 0.0, 0.0],
       n: 5,
       alpha: 1.0,
-      texture: "light1.jpg",
+      texture: "ceiling2.jpg",
     },
     vertices: [
       [0, blockHeight, 0],
@@ -138,9 +136,95 @@ let walls = [
       [1, 2, 3],
     ],
   },
+  {
+    material: {
+      ambient: [0.2, 0.0, 0.0],
+      diffuse: [0.5, 0.0, 0.0],
+      specular: [0.3, 0.0, 0.0],
+      n: 5,
+      alpha: 1.0,
+      texture: "wall4.jpg",
+    },
+    vertices: [
+      //Back
+      [0, 0, 0],
+      [0, blockHeight, 0],
+      [blockLength * maze.length, 0, 0],
+      [blockLength * maze.length, blockHeight, 0],
+      //Front
+      [0, 0, blockLength * maze.length],
+      [0, blockHeight, blockLength * maze.length],
+      [blockLength * maze.length, 0, blockLength * maze.length],
+      [blockLength * maze.length, blockHeight, blockLength * maze.length],
+      //Right
+      [0, 0, 0],
+      [0, blockHeight, 0],
+      [0, 0, blockLength * maze.length],
+      [0, blockHeight, blockLength * maze.length],
+      //Left
+      [blockLength * maze.length, 0, 0],
+      [blockLength * maze.length, blockHeight, 0],
+      [blockLength * maze.length, 0, blockLength * maze.length],
+      [blockLength * maze.length, blockHeight, blockLength * maze.length],
+    ],
+    normals: [
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+    ],
+    uvs: [
+      [maze.length, 0],
+      [maze.length, 1],
+      [0, 0],
+      [0, 1],
+
+      [maze.length, 0],
+      [maze.length, 1],
+      [0, 0],
+      [0, 1],
+
+      [0, 0],
+      [0, 1],
+      [maze.length, 0],
+      [maze.length, 1],
+
+      [0, 0],
+      [0, 1],
+      [maze.length, 0],
+      [maze.length, 1],
+    ],
+    triangles: [
+      [0, 1, 2],
+      [1, 2, 3],
+
+      [4, 5, 6],
+      [5, 6, 7],
+
+      [8, 9, 10],
+      [9, 10, 11],
+
+      [12, 13, 14],
+      [13, 14, 15],
+    ],
+  },
 ];
-rowIndex = 0;
-colIndex = 0;
+
 for (let i = 0; i < maze.length; i++) {
   for (let j = 0; j < maze.length; j++) {
     if (maze[i][j] == "#") {
@@ -152,11 +236,7 @@ for (let i = 0; i < maze.length; i++) {
         rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
         rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
         leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
-        leftUpForward: [
-          blockLength * (i + 1),
-          blockHeight,
-          blockLength * (j + 1),
-        ],
+        leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
       };
       wall = {
         material: {
