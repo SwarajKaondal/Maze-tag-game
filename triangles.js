@@ -543,9 +543,9 @@ export function getMazeObject(blockLength) {
       [21, 22, 23],
     ],
   };
-  map.push(playerModel);
+  // map.push(playerModel);
 
-  // map.push(frog);
+  map.push(frog);
   return { maze, map };
 }
 
@@ -557,7 +557,7 @@ let frog = {
     specular: [0.3, 0.0, 0.0],
     n: 40,
     alpha: 1.0,
-    texture: "wall4.jpg",
+    texture: "frog.jpg",
   },
   vertices: [
     [-0.311317, 0.297512, -0.236487],
