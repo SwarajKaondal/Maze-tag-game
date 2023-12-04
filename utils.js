@@ -5,11 +5,7 @@ const INPUT_TRIANGLES_URL = "triangles.json"; // triangles file loc
 // triangles file loc
 const INPUT_ELLIPSOIDS_URL =
   "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
-var defaultEye = vec3.fromValues(
-  blockLength / 2,
-  blockLength / 2,
-  blockLength / 2
-); // default eye position in world space
+var defaultEye; // default eye position in world space
 var defaultCenter = vec3.fromValues(0.25, 0.25, 0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0, 1, 0); // default view up vector
 var lightAmbient = vec3.fromValues(1, 1, 1); // default light ambient emission
@@ -17,7 +13,7 @@ var lightDiffuse = vec3.fromValues(1, 1, 1); // default light diffuse emission
 var lightSpecular = vec3.fromValues(1, 1, 1); // default light specular emission
 var lightPosition = vec3.fromValues(0.5, 0.5, -0.5); // default light position
 var rotateTheta = Math.PI / 90; // how much to rotate models by with each key press
-
+var globalLookAtVector = vec3.create();
 /* webgl and geometry data */
 var gl = null; // the all powerful gl object. It's all here folks!
 var inputTriangles = []; // the triangle data as loaded from input files
@@ -48,7 +44,7 @@ let r = 0;
 const dirEnum = { NEGATIVE: -1, POSITIVE: 1 }; // enumerated rotation direction
 
 /* interaction variables */
-var Eye = vec3.clone(defaultEye); // eye position in world space
+var Eye; // eye position in world space
 var Center = vec3.clone(defaultCenter); // view direction in world space
 var Up = vec3.clone(defaultUp); // view up vector in world space
 
@@ -104,7 +100,7 @@ function rotateModel(modelId, axis, direction) {
     newRotation
   );
 } // end rotate model
-document.onmousemove = handleMouseMove;
+// document.onmousemove = handleMouseMove;
 
 function horizontalEyeRotate(rotateValue) {
   let lookAt = vec3.create();
@@ -112,6 +108,7 @@ function horizontalEyeRotate(rotateValue) {
   let temp = vec3.create(); // lookat, right & temp vectors
 
   lookAt = vec3.normalize(lookAt, vec3.subtract(temp, Center, Eye)); // get lookat vector
+  globalLookAtVector = lookAt;
   viewRight = vec3.normalize(viewRight, vec3.cross(temp, lookAt, Up)); // get view right vector
   Center = vec3.add(Center, Center, vec3.scale(temp, viewRight, rotateValue));
 }
@@ -802,6 +799,15 @@ function pressKey(key) {
 // render the loaded model
 function renderModels() {
   // construct the model transform matrix, based on model state
+  if (gameConnected === true) {
+    socket.send(
+      JSON.stringify({
+        screenId: screenId,
+        position: { Eye, Center },
+        angle: globalLookAtVector,
+      })
+    );
+  }
 
   let renderingTransparent = false;
   function makeModelTransform(currModel) {
@@ -1057,11 +1063,15 @@ function loadStuff() {
   loadModels();
   footstepAudio = new Audio("./sounds/footsteps.wav");
 }
-let socket;
-let screenId = (Math.random() + 1).toString(36).substring(7);
 
-let lastTimeStamp = new Date();
-function main() {
+function main(blockLength) {
+  defaultEye = vec3.fromValues(
+    blockLength / 2,
+    blockLength / 2,
+    blockLength / 2
+  );
+  Eye = vec3.clone(defaultEye);
+
   setupWebGL(); // set up the webGL environment
 
   gl.enable(gl.BLEND);
@@ -1070,16 +1080,7 @@ function main() {
   loadStuff();
   setupShaders(); // setup the webGL shaders
   renderModels();
-  socket = new WebSocket("ws://localhost:3001/ws");
-  socket.onopen = function (e) {
-    console.log("connected to server");
-    socket.send(JSON.stringify({ id: screenId }));
-  };
-  socket.onmessage = function (event) {
-    console.log(new Date() - lastTimeStamp);
-    let socketData = event.data;
-    console.log(socketData);
-  };
+
   // draw the triangles using webGL
 } // end main
 
