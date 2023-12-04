@@ -1,12 +1,13 @@
 let socket;
 var maze;
-var walls;
+var map;
 var blockLength;
 var screenId;
 var gameConnected = false;
+var currentEnemyPosition;
 
 function initGame() {
-  socket = new WebSocket("ws://localhost:3001/ws");
+  socket = new WebSocket("ws://192.168.86.31:3001/ws");
   socket.onopen = function (e) {
     console.log("connected to server");
   };
@@ -14,11 +15,13 @@ function initGame() {
     let socketData = JSON.parse(event.data);
     if (socketData?.type === "init") {
       maze = socketData?.data?.maze;
-      walls = socketData?.data?.walls;
+      map = socketData?.data?.map;
       blockLength = socketData?.data?.blockLength;
       screenId = socketData?.data?.screenId;
       gameConnected = true;
       main(blockLength);
+    } else {
+      currentEnemyPosition = socketData;
     }
     console.log(socketData);
   };

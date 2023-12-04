@@ -5,31 +5,21 @@ export function getRandomInt(min, max) {
 export function getMazeObject(blockLength) {
   function createMaze() {
     let girdSize = 10;
-    let grid = [...Array(girdSize).keys()].map((i) =>
-      new Array(girdSize).fill(0)
-    );
-    let maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
-      new Array(2 * girdSize - 1).fill("#")
-    );
+    let grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
+    let maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
     let queue = [[0, 0]];
     grid[0][0] = 1;
     maze[0][0] = ".";
     do {
       let currNode = queue[queue.length - 1];
       let options = [];
-      if (
-        currNode[0] + 1 < girdSize &&
-        grid[currNode[0] + 1][currNode[1]] != 1
-      ) {
+      if (currNode[0] + 1 < girdSize && grid[currNode[0] + 1][currNode[1]] != 1) {
         options.push("Right");
       }
       if (currNode[0] - 1 > -1 && grid[currNode[0] - 1][currNode[1]] != 1) {
         options.push("Left");
       }
-      if (
-        currNode[1] + 1 < girdSize &&
-        grid[currNode[0]][currNode[1] + 1] != 1
-      ) {
+      if (currNode[1] + 1 < girdSize && grid[currNode[0]][currNode[1] + 1] != 1) {
         options.push("Down");
       }
       if (currNode[1] - 1 > -1 && grid[currNode[0]][currNode[1] - 1] != 1) {
@@ -86,8 +76,9 @@ export function getMazeObject(blockLength) {
   let maze = createMaze();
 
   let blockHeight = blockLength;
-  let walls = [
+  let map = [
     {
+      id: "Floor",
       material: {
         ambient: [0.0, 0.0, 0.0],
         diffuse: [0.0, 0.0, 0.0],
@@ -120,6 +111,7 @@ export function getMazeObject(blockLength) {
       ],
     },
     {
+      id: "Ceiling",
       material: {
         ambient: [0.0, 0.0, 0.0],
         diffuse: [0.0, 0.0, 0.0],
@@ -152,6 +144,7 @@ export function getMazeObject(blockLength) {
       ],
     },
     {
+      id: "OuterWall",
       material: {
         ambient: [0.2, 0.0, 0.0],
         diffuse: [0.5, 0.0, 0.0],
@@ -239,6 +232,7 @@ export function getMazeObject(blockLength) {
       ],
     },
     {
+      id: "Exit",
       material: {
         ambient: [0.2, 0.0, 0.0],
         diffuse: [0.5, 0.0, 0.0],
@@ -283,13 +277,10 @@ export function getMazeObject(blockLength) {
           rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
           rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
           leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
-          leftUpForward: [
-            blockLength * (i + 1),
-            blockHeight,
-            blockLength * (j + 1),
-          ],
+          leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
         };
         let wall = {
+          id: "Wall",
           material: {
             ambient: [0.2, 0.0, 0.0],
             diffuse: [0.5, 0.0, 0.0],
@@ -412,9 +403,146 @@ export function getMazeObject(blockLength) {
             [21, 22, 23],
           ],
         };
-        walls.push(wall);
+        map.push(wall);
       }
     }
   }
-  return { maze, walls };
+  let playerModelCordinates = {
+    rightDownBack: [blockLength / 3, blockHeight / 3, blockLength / 3],
+    rightUpBack: [blockLength / 3, (2 * blockHeight) / 3, blockLength / 3],
+    leftDownBack: [(2 * blockLength) / 3, blockHeight / 3, blockLength / 3],
+    leftUpBack: [(2 * blockLength) / 3, (2 * blockHeight) / 3, blockLength / 3],
+    rightDownForward: [blockLength / 3, blockHeight / 3, (2 * blockLength) / 3],
+    rightUpForward: [blockLength / 3, (2 * blockHeight) / 3, (2 * blockLength) / 3],
+    leftDownForward: [(2 * blockLength) / 3, blockHeight / 3, (2 * blockLength) / 3],
+    leftUpForward: [(2 * blockLength) / 3, (2 * blockHeight) / 3, (2 * blockLength) / 3],
+  };
+
+  let playerModel = {
+    id: "Frog",
+    material: {
+      ambient: [0.2, 0.0, 0.0],
+      diffuse: [0.5, 0.0, 0.0],
+      specular: [0.3, 0.0, 0.0],
+      n: 5,
+      alpha: 1.0,
+      texture: "wall2.png",
+    },
+    vertices: [
+      //Back Face
+      playerModelCordinates.rightDownBack,
+      playerModelCordinates.rightUpBack,
+      playerModelCordinates.leftDownBack,
+      playerModelCordinates.leftUpBack,
+      //Front Face
+      playerModelCordinates.rightDownForward,
+      playerModelCordinates.rightUpForward,
+      playerModelCordinates.leftDownForward,
+      playerModelCordinates.leftUpForward,
+      //Top Face
+      playerModelCordinates.rightUpBack,
+      playerModelCordinates.rightUpForward,
+      playerModelCordinates.leftUpBack,
+      playerModelCordinates.leftUpForward,
+      //Bottom Face
+      playerModelCordinates.rightDownBack,
+      playerModelCordinates.rightDownForward,
+      playerModelCordinates.leftDownBack,
+      playerModelCordinates.leftDownForward,
+      //Right Face
+      playerModelCordinates.rightUpBack,
+      playerModelCordinates.rightUpForward,
+      playerModelCordinates.rightDownBack,
+      playerModelCordinates.rightDownForward,
+      //Left Face
+      playerModelCordinates.leftUpBack,
+      playerModelCordinates.leftUpForward,
+      playerModelCordinates.leftDownBack,
+      playerModelCordinates.leftDownForward,
+    ],
+    normals: [
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+    ],
+    uvs: [
+      [1, 0],
+      [1, 1],
+      [0, 0],
+      [0, 1],
+
+      [1, 0],
+      [1, 1],
+      [0, 0],
+      [0, 1],
+
+      [1, 1],
+      [0, 1],
+      [1, 0],
+      [0, 0],
+
+      [1, 1],
+      [0, 1],
+      [1, 0],
+      [0, 0],
+
+      [1, 1],
+      [0, 1],
+      [1, 0],
+      [0, 0],
+
+      [1, 1],
+      [0, 1],
+      [1, 0],
+      [0, 0],
+    ],
+    triangles: [
+      [0, 1, 2],
+      [1, 2, 3],
+
+      [4, 5, 6],
+      [5, 6, 7],
+
+      [8, 9, 10],
+      [9, 10, 11],
+
+      [12, 13, 14],
+      [13, 14, 15],
+
+      [16, 17, 18],
+      [17, 18, 19],
+
+      [20, 21, 22],
+      [21, 22, 23],
+    ],
+  };
+  map.push(playerModel);
+
+  return { maze, map };
 }
