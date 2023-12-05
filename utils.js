@@ -3,8 +3,7 @@
 /* assignment specific globals */
 const INPUT_TRIANGLES_URL = "triangles.json"; // triangles file loc
 // triangles file loc
-const INPUT_ELLIPSOIDS_URL =
-  "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
+const INPUT_ELLIPSOIDS_URL = "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
 var defaultEye; // default eye position in world space
 var defaultCenter = vec3.fromValues(0.25, 0.25, 0.5); // default view direction in world space
 var defaultUp = vec3.fromValues(0, 1, 0); // default view up vector
@@ -56,21 +55,16 @@ var textureCoordBuffers = [];
 // get the JSON file from the passed URL
 function getJSONFile(url, descr) {
   try {
-    if (typeof url !== "string" || typeof descr !== "string")
-      throw "getJSONFile: parameter not a string";
+    if (typeof url !== "string" || typeof descr !== "string") throw "getJSONFile: parameter not a string";
     else {
       var httpReq = new XMLHttpRequest(); // a new http request
       httpReq.open("GET", url, false); // init the request
       httpReq.send(null); // send the request
       var startTime = Date.now();
-      while (
-        httpReq.status !== 200 &&
-        httpReq.readyState !== XMLHttpRequest.DONE
-      ) {
+      while (httpReq.status !== 200 && httpReq.readyState !== XMLHttpRequest.DONE) {
         if (Date.now() - startTime > 3000) break;
       } // until its loaded or we time out after three seconds
-      if (httpReq.status !== 200 || httpReq.readyState !== XMLHttpRequest.DONE)
-        throw "Unable to open " + descr + " file!";
+      if (httpReq.status !== 200 || httpReq.readyState !== XMLHttpRequest.DONE) throw "Unable to open " + descr + " file!";
       else return JSON.parse(httpReq.response);
     } // end if good params
   } catch (e) {
@@ -89,16 +83,8 @@ function rotateModel(modelId, axis, direction) {
   var newRotation = mat4.create();
 
   mat4.fromRotation(newRotation, direction * rotateTheta, axis); // get a rotation matrix around passed axis
-  vec3.transformMat4(
-    inputTriangles[modelId].xAxis,
-    inputTriangles[modelId].xAxis,
-    newRotation
-  ); // rotate model x axis tip
-  vec3.transformMat4(
-    inputTriangles[modelId].yAxis,
-    inputTriangles[modelId].yAxis,
-    newRotation
-  );
+  vec3.transformMat4(inputTriangles[modelId].xAxis, inputTriangles[modelId].xAxis, newRotation); // rotate model x axis tip
+  vec3.transformMat4(inputTriangles[modelId].yAxis, inputTriangles[modelId].yAxis, newRotation);
 } // end rotate model
 // document.onmousemove = handleMouseMove;
 
@@ -174,35 +160,15 @@ function handleKeyDown(event) {
         }
         let tempEye = vec3.create();
         let tempCenter = vec3.create();
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, viewRight, viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, viewRight, viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, viewRight, viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))) {
           Eye = vec3.fromValues(tempEye[0], Eye[1], Eye[2]);
           Center = vec3.fromValues(tempCenter[0], Center[1], Center[2]);
         }
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, viewRight, viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, viewRight, viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, viewRight, viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))) {
           Eye = vec3.fromValues(Eye[0], Eye[1], tempEye[2]);
           Center = vec3.fromValues(Center[0], Center[1], tempCenter[2]);
         }
@@ -215,35 +181,15 @@ function handleKeyDown(event) {
         }
         let tempEye = vec3.create();
         let tempCenter = vec3.create();
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, viewRight, -viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, viewRight, -viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, -viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, viewRight, -viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))) {
           Eye = vec3.fromValues(tempEye[0], Eye[1], Eye[2]);
           Center = vec3.fromValues(tempCenter[0], Center[1], Center[2]);
         }
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, viewRight, -viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, viewRight, -viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, viewRight, -viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, viewRight, -viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))) {
           Eye = vec3.fromValues(Eye[0], Eye[1], tempEye[2]);
           Center = vec3.fromValues(Center[0], Center[1], tempCenter[2]);
         }
@@ -253,46 +199,22 @@ function handleKeyDown(event) {
     case "KeyS": // translate view backward, rotate up with shift
       if (event.getModifierState("Shift")) {
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, viewDelta));
-        Up = vec3.cross(
-          Up,
-          viewRight,
-          vec3.subtract(lookAt, Center, Eye)
-        ); /* global side effect */
+        Up = vec3.cross(Up, viewRight, vec3.subtract(lookAt, Center, Eye)); /* global side effect */
       } else {
         if (footstepAudio.paused) {
           footstepAudio.play();
         }
         let tempEye = vec3.create();
         let tempCenter = vec3.create();
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))) {
           Eye = vec3.fromValues(tempEye[0], Eye[1], Eye[2]);
           Center = vec3.fromValues(tempCenter[0], Center[1], Center[2]);
         }
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), -viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))) {
           Eye = vec3.fromValues(Eye[0], Eye[1], tempEye[2]);
           Center = vec3.fromValues(Center[0], Center[1], tempCenter[2]);
         }
@@ -301,69 +223,37 @@ function handleKeyDown(event) {
     case "KeyW": // translate view forward, rotate down with shift
       if (event.getModifierState("Shift")) {
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, -viewDelta));
-        Up = vec3.cross(
-          Up,
-          viewRight,
-          vec3.subtract(lookAt, Center, Eye)
-        ); /* global side effect */
+        Up = vec3.cross(Up, viewRight, vec3.subtract(lookAt, Center, Eye)); /* global side effect */
       } else {
         if (footstepAudio.paused) {
           footstepAudio.play();
         }
         let tempEye = vec3.create();
         let tempCenter = vec3.create();
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(tempEye[0], Eye[1], Eye[2]))) {
           Eye = vec3.fromValues(tempEye[0], Eye[1], Eye[2]);
           Center = vec3.fromValues(tempCenter[0], Center[1], Center[2]);
         }
 
-        tempEye = vec3.add(
-          tempEye,
-          Eye,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
-        );
-        tempCenter = vec3.add(
-          tempCenter,
-          Center,
-          vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta)
-        );
-        if (
-          !getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))
-        ) {
+        tempEye = vec3.add(tempEye, Eye, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        tempCenter = vec3.add(tempCenter, Center, vec3.scale(temp, vec3.fromValues(lookAt[0], 0, lookAt[2]), viewDelta));
+        if (!getIntersectionDirection(vec3.fromValues(Eye[0], Eye[1], tempEye[2]))) {
           Eye = vec3.fromValues(Eye[0], Eye[1], tempEye[2]);
           Center = vec3.fromValues(Center[0], Center[1], tempCenter[2]);
         }
       } // end if shift not pressed
       break;
     case "KeyQ": // translate view up, rotate counterclockwise with shift
-      if (event.getModifierState("Shift"))
-        Up = vec3.normalize(
-          Up,
-          vec3.add(Up, Up, vec3.scale(temp, viewRight, -viewDelta))
-        );
+      if (event.getModifierState("Shift")) Up = vec3.normalize(Up, vec3.add(Up, Up, vec3.scale(temp, viewRight, -viewDelta)));
       else {
         Eye = vec3.add(Eye, Eye, vec3.scale(temp, Up, viewDelta));
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, viewDelta));
       } // end if shift not pressed
       break;
     case "KeyE": // translate view down, rotate clockwise with shift
-      if (event.getModifierState("Shift"))
-        Up = vec3.normalize(
-          Up,
-          vec3.add(Up, Up, vec3.scale(temp, viewRight, viewDelta))
-        );
+      if (event.getModifierState("Shift")) Up = vec3.normalize(Up, vec3.add(Up, Up, vec3.scale(temp, viewRight, viewDelta)));
       else {
         Eye = vec3.add(Eye, Eye, vec3.scale(temp, Up, -viewDelta));
         Center = vec3.add(Center, Center, vec3.scale(temp, Up, -viewDelta));
@@ -385,13 +275,11 @@ function handleKeyDown(event) {
       else translateModel(vec3.scale(temp, viewRight, -viewDelta));
       break;
     case "KeyL": // translate backward, rotate up with shift
-      if (event.getModifierState("Shift"))
-        rotateModel(viewRight, dirEnum.POSITIVE);
+      if (event.getModifierState("Shift")) rotateModel(viewRight, dirEnum.POSITIVE);
       else translateModel(vec3.scale(temp, lookAt, -viewDelta));
       break;
     case "KeyO": // translate forward, rotate down with shift
-      if (event.getModifierState("Shift"))
-        rotateModel(viewRight, dirEnum.NEGATIVE);
+      if (event.getModifierState("Shift")) rotateModel(viewRight, dirEnum.NEGATIVE);
       else translateModel(vec3.scale(temp, lookAt, viewDelta));
 
       break;
@@ -405,15 +293,17 @@ function handleKeyDown(event) {
       lastTimeStamp = new Date();
       break;
     case "KeyP": // translate down, rotate clockwise with shift
-      if (event.getModifierState("Shift"))
-        rotateModel(lookAt, dirEnum.NEGATIVE);
+      if (event.getModifierState("Shift")) rotateModel(lookAt, dirEnum.NEGATIVE);
       else translateModel(vec3.scale(temp, Up, -viewDelta));
       break;
   } // end switch
   sendCurrentPosition();
+  loadMinimap();
 } // end handleKeyDown
 
 var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
+var minimapCanvas = document.getElementById("minimap");
+let minimap = minimapCanvas.getContext("2d");
 const aspectRatio = canvas.width / canvas.height;
 const MOVEMENT_THRESHOLD = 0.15 * aspectRatio;
 var viewDelta = (2.5 * canvas.width) / 100000; // how much to displace view with each key press
@@ -472,16 +362,8 @@ function loadModels() {
       var vtxToAdd; // vtx coords to add to the coord array
       var normToAdd; // vtx normal to add to the coord array
       var triToAdd; // tri indices to add to the index array
-      var maxCorner = vec3.fromValues(
-        Number.MIN_VALUE,
-        Number.MIN_VALUE,
-        Number.MIN_VALUE
-      ); // bbox corner
-      var minCorner = vec3.fromValues(
-        Number.MAX_VALUE,
-        Number.MAX_VALUE,
-        Number.MAX_VALUE
-      ); // other corner
+      var maxCorner = vec3.fromValues(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE); // bbox corner
+      var minCorner = vec3.fromValues(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE); // other corner
 
       // process each triangle set to load webgl vertex and triangle buffers
       numTriangleSets = inputTriangles.length; // remember how many tri sets
@@ -504,79 +386,39 @@ function loadModels() {
           // verts in set
           vtxToAdd = inputTriangles[whichSet].vertices[whichSetVert]; // get vertex to add
           normToAdd = inputTriangles[whichSet].normals[whichSetVert]; // get normal to add
-          inputTriangles[whichSet].glVertices.push(
-            vtxToAdd[0],
-            vtxToAdd[1],
-            vtxToAdd[2]
-          ); // put coords in set coord list
-          inputTriangles[whichSet].glNormals.push(
-            normToAdd[0],
-            normToAdd[1],
-            normToAdd[2]
-          ); // put normal in set coord list
+          inputTriangles[whichSet].glVertices.push(vtxToAdd[0], vtxToAdd[1], vtxToAdd[2]); // put coords in set coord list
+          inputTriangles[whichSet].glNormals.push(normToAdd[0], normToAdd[1], normToAdd[2]); // put normal in set coord list
           vec3.max(maxCorner, maxCorner, vtxToAdd); // update world bounding box corner maxima
           vec3.min(minCorner, minCorner, vtxToAdd); // update world bounding box corner minima
-          vec3.add(
-            inputTriangles[whichSet].center,
-            inputTriangles[whichSet].center,
-            vtxToAdd
-          ); // add to ctr sum
+          vec3.add(inputTriangles[whichSet].center, inputTriangles[whichSet].center, vtxToAdd); // add to ctr sum
         } // end for vertices in set
-        vec3.scale(
-          inputTriangles[whichSet].center,
-          inputTriangles[whichSet].center,
-          1 / numVerts
-        ); // avg ctr sum
+        vec3.scale(inputTriangles[whichSet].center, inputTriangles[whichSet].center, 1 / numVerts); // avg ctr sum
 
         textureCoordBuffers.push(gl.createBuffer());
         gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffers[whichSet]);
 
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          new Float32Array(inputTriangles[whichSet].uvs.flat()),
-          gl.STATIC_DRAW
-        );
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(inputTriangles[whichSet].uvs.flat()), gl.STATIC_DRAW);
 
         // send the vertex coords and normals to webGL
         vertexBuffers[whichSet] = gl.createBuffer(); // init empty webgl set vertex coord buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffers[whichSet]); // activate that buffer
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          new Float32Array(inputTriangles[whichSet].glVertices),
-          gl.STATIC_DRAW
-        ); // data in
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(inputTriangles[whichSet].glVertices), gl.STATIC_DRAW); // data in
         normalBuffers[whichSet] = gl.createBuffer(); // init empty webgl set normal component buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffers[whichSet]); // activate that buffer
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          new Float32Array(inputTriangles[whichSet].glNormals),
-          gl.STATIC_DRAW
-        ); // data in
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(inputTriangles[whichSet].glNormals), gl.STATIC_DRAW); // data in
 
         // set up the triangle index array, adjusting indices across sets
         inputTriangles[whichSet].glTriangles = []; // flat index list for webgl
         triSetSizes[whichSet] = inputTriangles[whichSet].triangles.length; // number of tris in this set
-        for (
-          whichSetTri = 0;
-          whichSetTri < triSetSizes[whichSet];
-          whichSetTri++
-        ) {
+        for (whichSetTri = 0; whichSetTri < triSetSizes[whichSet]; whichSetTri++) {
           triToAdd = inputTriangles[whichSet].triangles[whichSetTri]; // get tri to add
-          inputTriangles[whichSet].glTriangles.push(
-            triToAdd[0],
-            triToAdd[1],
-            triToAdd[2]
-          ); // put indices in set list
+          inputTriangles[whichSet].glTriangles.push(triToAdd[0], triToAdd[1], triToAdd[2]); // put indices in set list
         } // end for triangles in set
 
         // send the triangle indices to webGL
         triangleBuffers.push(gl.createBuffer()); // init empty triangle index buffer
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleBuffers[whichSet]); // activate that buffer
-        gl.bufferData(
-          gl.ELEMENT_ARRAY_BUFFER,
-          new Uint16Array(inputTriangles[whichSet].glTriangles),
-          gl.STATIC_DRAW
-        ); // data in
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(inputTriangles[whichSet].glTriangles), gl.STATIC_DRAW); // data in
       } // end for each triangle set
     } // end if triangle file loaded
   } catch (e) {
@@ -684,15 +526,11 @@ function setupShaders() {
 
     if (!gl.getShaderParameter(fShader, gl.COMPILE_STATUS)) {
       // bad frag shader compile
-      throw (
-        "error during fragment shader compile: " + gl.getShaderInfoLog(fShader)
-      );
+      throw "error during fragment shader compile: " + gl.getShaderInfoLog(fShader);
       gl.deleteShader(fShader);
     } else if (!gl.getShaderParameter(vShader, gl.COMPILE_STATUS)) {
       // bad vertex shader compile
-      throw (
-        "error during vertex shader compile: " + gl.getShaderInfoLog(vShader)
-      );
+      throw "error during vertex shader compile: " + gl.getShaderInfoLog(vShader);
       gl.deleteShader(vShader);
     } else {
       // no compile errors
@@ -703,10 +541,7 @@ function setupShaders() {
 
       if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         // bad program link
-        throw (
-          "error during shader program linking: " +
-          gl.getProgramInfoLog(shaderProgram)
-        );
+        throw "error during shader program linking: " + gl.getProgramInfoLog(shaderProgram);
       } else {
         // no shader program link errors
         gl.useProgram(shaderProgram); // activate shader program (frag and vert)
@@ -724,27 +559,12 @@ function setupShaders() {
         pvmMatrixULoc = gl.getUniformLocation(shaderProgram, "upvmMatrix"); // ptr to pvmmat
 
         // locate fragment uniforms
-        var eyePositionULoc = gl.getUniformLocation(
-          shaderProgram,
-          "uEyePosition"
-        ); // ptr to eye position
-        var lightAmbientULoc = gl.getUniformLocation(
-          shaderProgram,
-          "uLightAmbient"
-        );
+        var eyePositionULoc = gl.getUniformLocation(shaderProgram, "uEyePosition"); // ptr to eye position
+        var lightAmbientULoc = gl.getUniformLocation(shaderProgram, "uLightAmbient");
         // ptr to light ambient
-        var lightDiffuseULoc = gl.getUniformLocation(
-          shaderProgram,
-          "uLightDiffuse"
-        ); // ptr to light diffuse
-        var lightSpecularULoc = gl.getUniformLocation(
-          shaderProgram,
-          "uLightSpecular"
-        ); // ptr to light specular
-        var lightPositionULoc = gl.getUniformLocation(
-          shaderProgram,
-          "uLightPosition"
-        ); // ptr to light position
+        var lightDiffuseULoc = gl.getUniformLocation(shaderProgram, "uLightDiffuse"); // ptr to light diffuse
+        var lightSpecularULoc = gl.getUniformLocation(shaderProgram, "uLightSpecular"); // ptr to light specular
+        var lightPositionULoc = gl.getUniformLocation(shaderProgram, "uLightPosition"); // ptr to light position
         ambientULoc = gl.getUniformLocation(shaderProgram, "uAmbient"); // ptr to ambient
         diffuseULoc = gl.getUniformLocation(shaderProgram, "uDiffuse"); // ptr to diffuse
         specularULoc = gl.getUniformLocation(shaderProgram, "uSpecular"); // ptr to specular
@@ -762,21 +582,12 @@ function setupShaders() {
         const programInfo = {
           program: shaderProgram,
           attribLocations: {
-            vertexPosition: gl.getAttribLocation(
-              shaderProgram,
-              "aVertexPosition"
-            ),
+            vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
             textureCoord: gl.getAttribLocation(shaderProgram, "aTextureCoord"),
           },
           uniformLocations: {
-            projectionMatrix: gl.getUniformLocation(
-              shaderProgram,
-              "uProjectionMatrix"
-            ),
-            modelViewMatrix: gl.getUniformLocation(
-              shaderProgram,
-              "uModelViewMatrix"
-            ),
+            projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
+            modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
             uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
           },
         };
@@ -818,19 +629,11 @@ function renderModels() {
   let renderingTransparent = false;
   function makeModelTransform(currModel) {
     if (currModel.id === "Frog" && currentEnemyPosition !== undefined) {
+      loadMinimap();
       let pos = vec3.create();
-      vec3.subtract(
-        pos,
-        vec3.fromValues(...Object.values(currentEnemyPosition.position.Eye)),
-        defaultEye
-      );
+      vec3.subtract(pos, vec3.fromValues(...Object.values(currentEnemyPosition.position.Eye)), defaultEye);
       currModel.translation = pos;
-      currModel.xAxis = vec3.fromValues(
-        currentEnemyPosition.angle[0],
-        0,
-        currentEnemyPosition.angle[2]
-      );
-      console.log(...Object.values(currentEnemyPosition.angle));
+      currModel.xAxis = vec3.fromValues(currentEnemyPosition.angle[0], 0, currentEnemyPosition.angle[2]);
     }
     var zAxis = vec3.create(),
       sumRotation = mat4.create(),
@@ -864,18 +667,10 @@ function renderModels() {
     mat4.multiply(mMatrix, sumRotation, mMatrix); // R(ax) * S(1.2) * T(-ctr)
 
     // translate back to model center
-    mat4.multiply(
-      mMatrix,
-      mat4.fromTranslation(temp, currModel.center),
-      mMatrix
-    ); // T(ctr) * R(ax) * S(1.2) * T(-ctr)
+    mat4.multiply(mMatrix, mat4.fromTranslation(temp, currModel.center), mMatrix); // T(ctr) * R(ax) * S(1.2) * T(-ctr)
 
     // translate model to current interactive orientation
-    mat4.multiply(
-      mMatrix,
-      mat4.fromTranslation(temp, currModel.translation),
-      mMatrix
-    ); // T(pos)*T(ctr)*R(ax)*S(1.2)*T(-ctr)
+    mat4.multiply(mMatrix, mat4.fromTranslation(temp, currModel.translation), mMatrix); // T(pos)*T(ctr)*R(ax)*S(1.2)*T(-ctr)
   } // end make model transform
 
   // var hMatrix = mat4.create(); // handedness matrix
@@ -884,20 +679,13 @@ function renderModels() {
   var mMatrix = mat4.create(); // model matrix
   var pvMatrix = mat4.create(); // hand * proj * view matrices
   var pvmMatrix = mat4.create(); // hand * proj * view * model matrices
-  console.log(Eye);
   window.requestAnimationFrame(renderModels); // set up frame render callback
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // clear frame/depth buffers
 
   // set up projection and view
   // mat4.fromScaling(hMatrix,vec3.fromValues(-1,1,1)); // create handedness matrix
-  mat4.perspective(
-    pMatrix,
-    0.4 * Math.PI,
-    aspectRatio,
-    0.1,
-    blockLength * maze.length + 5
-  ); // create projection matrix
+  mat4.perspective(pMatrix, 0.4 * Math.PI, aspectRatio, 0.1, blockLength * maze.length + 5); // create projection matrix
   mat4.lookAt(vMatrix, Eye, Center, Up); // create view matrix
   mat4.multiply(pvMatrix, pvMatrix, pMatrix); // projection
   mat4.multiply(pvMatrix, pvMatrix, vMatrix); // projection * view
@@ -949,12 +737,7 @@ function renderModels() {
 
     // triangle buffer: activate and render
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleBuffers[whichTriSet]); // activate
-    gl.drawElements(
-      gl.TRIANGLES,
-      3 * triSetSizes[whichTriSet],
-      gl.UNSIGNED_SHORT,
-      0
-    ); // render
+    gl.drawElements(gl.TRIANGLES, 3 * triSetSizes[whichTriSet], gl.UNSIGNED_SHORT, 0); // render
   });
 } // end render model
 
@@ -979,17 +762,7 @@ function loadTexture(gl, url) {
   const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
   const pixel = new Uint8Array([0, 0, 255, 255]); // opaque blue
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    level,
-    internalFormat,
-    width,
-    height,
-    border,
-    srcFormat,
-    srcType,
-    pixel
-  );
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
 
   const image = new Image();
   image.crossOrigin = "anonymous";
@@ -997,14 +770,7 @@ function loadTexture(gl, url) {
 
   image.onload = () => {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      level,
-      internalFormat,
-      srcFormat,
-      srcType,
-      image
-    );
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
 
     // WebGL1 has different requirements for power of 2 images
     // vs. non power of 2 images so check if the image is a
@@ -1017,11 +783,7 @@ function loadTexture(gl, url) {
       // wrapping to clamp to edge
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-      gl.texParameteri(
-        gl.TEXTURE_2D,
-        gl.TEXTURE_MIN_FILTER,
-        gl.LINEAR_MIPMAP_LINEAR
-      );
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     }
   };
   textureMap[url] = texture;
@@ -1074,9 +836,31 @@ function loadSortedObjects() {
   });
 
   inputTriangles = [...transparentObjects, ...opaqueObjects];
-  texturesList = inputTriangles.map((triangle) =>
-    loadTexture(gl, `images/${triangle.material.texture}`)
-  );
+  texturesList = inputTriangles.map((triangle) => loadTexture(gl, `images/${triangle.material.texture}`));
+}
+
+function loadMinimap() {
+  let size = 10;
+  minimap.fillStyle = "#5A5A5A";
+  minimap.fillRect(0, 0, size * (maze.length + 2), size * (maze.length + 2));
+  minimap.fillStyle = "#000000";
+  minimap.fillRect(size, size, size * maze.length, size * maze.length);
+  for (let i = 0; i < maze.length; i++) {
+    for (let j = 0; j < maze.length; j++) {
+      if (maze[i][j] == "#") {
+        minimap.fillStyle = "#5A5A5A";
+        minimap.fillRect(size * (i + 1), size * (j + 1), size, size);
+      }
+    }
+  }
+  let self = [Math.floor(Eye[0] / blockLength), Math.floor(Eye[2] / blockLength)];
+  minimap.fillStyle = "#00FF00";
+  minimap.fillRect(size * (self[0] + 1), size * (self[1] + 1), size, size);
+  if (currentEnemyPosition != undefined) {
+    let enemy = [Math.floor(currentEnemyPosition.position.Eye[0] / blockLength), Math.floor(currentEnemyPosition.position.Eye[2] / blockLength)];
+    minimap.fillStyle = "#ff0000";
+    minimap.fillRect(size * (enemy[0] + 1), size * (enemy[1] + 1), size, size);
+  }
 }
 
 function loadStuff() {
@@ -1086,11 +870,7 @@ function loadStuff() {
 }
 
 function main(blockLength) {
-  defaultEye = vec3.fromValues(
-    blockLength / 2,
-    blockLength / 2,
-    blockLength / 2
-  );
+  defaultEye = vec3.fromValues(blockLength / 2, blockLength / 2, blockLength / 2);
   Eye = vec3.clone(defaultEye);
 
   setupWebGL(); // set up the webGL environment
@@ -1099,6 +879,7 @@ function main(blockLength) {
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   // load in the models from tri file
   loadStuff();
+  loadMinimap();
   setupShaders(); // setup the webGL shaders
   renderModels();
 
@@ -1106,10 +887,7 @@ function main(blockLength) {
 } // end main
 
 function getIntersectionDirection(newEye) {
-  let eyeGrid = [
-    Math.floor(newEye[2] / blockLength),
-    Math.floor(newEye[0] / blockLength),
-  ];
+  let eyeGrid = [Math.floor(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)];
   let blocks = checkAdjacentBlocks(maze, eyeGrid);
   let boxPosition = [newEye[2] % blockLength, newEye[0] % blockLength];
   // console.log(boxPosition, blocks);
@@ -1139,28 +917,16 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     forward: false,
     back: false,
   };
-  if (
-    currPosition[1] > 0 &&
-    mazeArray[currPosition[1] - 1][currPosition[0]] === "#"
-  ) {
+  if (currPosition[1] > 0 && mazeArray[currPosition[1] - 1][currPosition[0]] === "#") {
     adjacentBlocks.back = true;
   }
-  if (
-    currPosition[1] < mazeArray.length - 1 &&
-    mazeArray[currPosition[1] + 1][currPosition[0]] === "#"
-  ) {
+  if (currPosition[1] < mazeArray.length - 1 && mazeArray[currPosition[1] + 1][currPosition[0]] === "#") {
     adjacentBlocks.forward = true;
   }
-  if (
-    currPosition[0] > 0 &&
-    mazeArray[currPosition[1]][currPosition[0] - 1] === "#"
-  ) {
+  if (currPosition[0] > 0 && mazeArray[currPosition[1]][currPosition[0] - 1] === "#") {
     adjacentBlocks.right = true;
   }
-  if (
-    currPosition[0] < mazeArray[0].length - 1 &&
-    mazeArray[currPosition[1]][currPosition[0] + 1] === "#"
-  ) {
+  if (currPosition[0] < mazeArray[0].length - 1 && mazeArray[currPosition[1]][currPosition[0] + 1] === "#") {
     adjacentBlocks.left = true;
   }
   return adjacentBlocks;
