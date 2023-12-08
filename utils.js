@@ -1096,14 +1096,18 @@ function loadSortedObjects() {
 
 function loadMinimap() {
   let size = 10;
-  minimap.fillStyle = "#5A5A5A";
+  minimap.fillStyle = "#949494";
   minimap.fillRect(0, 0, size * (maze.length + 2), size * (maze.length + 2));
   minimap.fillStyle = "#000000";
   minimap.fillRect(size, size, size * maze.length, size * maze.length);
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze.length; j++) {
       if (maze[i][j] == "#") {
-        minimap.fillStyle = "#5A5A5A";
+        minimap.fillStyle = "#949494";
+        minimap.fillRect(size * (i + 1), size * (j + 1), size, size);
+      }
+      if (maze[i][j] == ",") {
+        minimap.fillStyle = "#bababa";
         minimap.fillRect(size * (i + 1), size * (j + 1), size, size);
       }
     }
@@ -1154,39 +1158,47 @@ function getIntersectionDirection(newEye) {
   ];
   let blocks = checkAdjacentBlocks(maze, eyeGrid);
   let boxPosition = [newEye[2] % blockLength, newEye[0] % blockLength];
+  let isBlocked = false;
   // console.log(boxPosition, blocks);
   if (blocks.forward && boxPosition[1] + MOVEMENT_THRESHOLD >= blockLength) {
     // console.log("blocking forward");
-    return true;
+    isBlocked = true;
   }
   if (blocks.back && boxPosition[1] - MOVEMENT_THRESHOLD <= 0) {
     // console.log("blocking back");
-    return true;
+    isBlocked = true;
   }
   if (blocks.right && boxPosition[0] - MOVEMENT_THRESHOLD <= 0) {
     // console.log("blocking right");
-    return true;
+    isBlocked = true;
   }
   if (blocks.left && boxPosition[0] + MOVEMENT_THRESHOLD >= blockLength) {
     // console.log("blocking left");
-    return true;
+    isBlocked = true;
   }
 
-  let corners = [
-    [Math.floor(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)],
-    [Math.ceil(newEye[2] / blockLength), Math.ceil(newEye[0] / blockLength)],
-    [Math.ceil(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)],
-    [Math.floor(newEye[2] / blockLength), Math.ceil(newEye[0] / blockLength)],
-  ];
-  corners.forEach((corner) => {
-    if (
-      euclideanDistance(Eye[2], Eye[0], corner[0], corner[1]) <
-      MOVEMENT_THRESHOLD
-    ) {
-      return true;
-    }
-  });
-  return false;
+  // let corners = [];
+  // if (blocks.rightBack) {
+  //   corners.push([Math.floor(newEye[0] / blockLength), Math.floor(newEye[2] / blockLength)]);
+  // }
+  // if (blocks.leftBack) {
+  //   corners.push([Math.ceil(newEye[0] / blockLength), Math.floor(newEye[2] / blockLength)]);
+  // }
+  // if (blocks.rightForward) {
+  //   corners.push([Math.floor(newEye[0] / blockLength), Math.ceil(newEye[2] / blockLength)]);
+  // }
+  // if (blocks.leftForward) {
+  //   corners.push([Math.ceil(newEye[0] / blockLength), Math.ceil(newEye[2] / blockLength)]);
+  // }
+
+  // console.log(Eye[0], Eye[2]);
+  // corners.forEach((corner) => {
+  //   console.log(corner[0], corner[1]);
+  //   if (euclideanDistance(newEye[0], newEye[2], corner[0], corner[1]) < MOVEMENT_THRESHOLD * 0.5) {
+  //     isBlocked = true;
+  //   }
+  // });
+  return isBlocked;
 }
 
 function checkAdjacentBlocks(mazeArray, currPosition) {
@@ -1195,30 +1207,34 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     right: false,
     forward: false,
     back: false,
+    rightBack: false,
+    leftBack: false,
+    rightForward: false,
+    leftForward: false,
   };
-  if (
-    currPosition[1] > 0 &&
-    mazeArray[currPosition[1] - 1][currPosition[0]] === "#"
-  ) {
+  if ((currPosition[1] > 0 && mazeArray[currPosition[1] - 1][currPosition[0]] === "#") || currPosition[1] == 0) {
     adjacentBlocks.back = true;
   }
-  if (
-    currPosition[1] < mazeArray.length - 1 &&
-    mazeArray[currPosition[1] + 1][currPosition[0]] === "#"
-  ) {
+  if ((currPosition[1] < mazeArray.length - 1 && mazeArray[currPosition[1] + 1][currPosition[0]] === "#") || currPosition[1] == maze.length - 1) {
     adjacentBlocks.forward = true;
   }
-  if (
-    currPosition[0] > 0 &&
-    mazeArray[currPosition[1]][currPosition[0] - 1] === "#"
-  ) {
+  if ((currPosition[0] > 0 && mazeArray[currPosition[1]][currPosition[0] - 1] === "#") || currPosition[0] == 0) {
     adjacentBlocks.right = true;
   }
-  if (
-    currPosition[0] < mazeArray[0].length - 1 &&
-    mazeArray[currPosition[1]][currPosition[0] + 1] === "#"
-  ) {
+  if ((currPosition[0] < mazeArray[0].length - 1 && mazeArray[currPosition[1]][currPosition[0] + 1] === "#") || currPosition[0] == maze.length - 1) {
     adjacentBlocks.left = true;
+  }
+  if (currPosition[0] - 1 > -1 && currPosition[1] - 1 > -1 && mazeArray[currPosition[0] - 1][currPosition[1] - 1] == "#") {
+    adjacentBlocks.leftBack = true;
+  }
+  if (currPosition[0] + 1 < maze.length && currPosition[1] - 1 > -1 && mazeArray[currPosition[0] + 1][currPosition[1] - 1] == "#") {
+    adjacentBlocks.rightBack = true;
+  }
+  if (currPosition[0] - 1 > -1 && currPosition[1] + 1 < maze.length && mazeArray[currPosition[0] - 1][currPosition[1] + 1] == "#") {
+    adjacentBlocks.lefttForward = true;
+  }
+  if (currPosition[0] + 1 < maze.length && currPosition[1] + 1 < maze.length && mazeArray[currPosition[0] + 1][currPosition[1] + 1] == "#") {
+    adjacentBlocks.rightForward = true;
   }
   return adjacentBlocks;
 }
