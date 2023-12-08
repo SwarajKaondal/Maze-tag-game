@@ -1129,6 +1129,21 @@ function getIntersectionDirection(newEye) {
     // console.log("blocking left");
     return true;
   }
+
+  let corners = [
+    [Math.floor(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)],
+    [Math.ceil(newEye[2] / blockLength), Math.ceil(newEye[0] / blockLength)],
+    [Math.ceil(newEye[2] / blockLength), Math.floor(newEye[0] / blockLength)],
+    [Math.floor(newEye[2] / blockLength), Math.ceil(newEye[0] / blockLength)],
+  ];
+  corners.forEach((corner) => {
+    if (
+      euclideanDistance(Eye[2], Eye[0], corner[0], corner[1]) <
+      MOVEMENT_THRESHOLD
+    ) {
+      return true;
+    }
+  });
   return false;
 }
 
@@ -1164,4 +1179,15 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     adjacentBlocks.left = true;
   }
   return adjacentBlocks;
+}
+
+function euclideanDistance(x1, y1, x2, y2) {
+  // Calculate the squared differences
+  const xDiffSquared = Math.pow(x2 - x1, 2);
+  const yDiffSquared = Math.pow(y2 - y1, 2);
+
+  // Sum the squared differences and take the square root
+  const distance = Math.sqrt(xDiffSquared + yDiffSquared);
+
+  return distance;
 }
