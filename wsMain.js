@@ -7,6 +7,9 @@ const CANVAS_HEIGHT = 512;
 
 const BLOCK_LENGTH = CANVAS_WIDTH / 1000;
 
+const RUNNER_ROLE = "runner";
+const SEEKER_ROLE = "seeker";
+
 let app = express();
 
 let mazeObject = getMazeObject(BLOCK_LENGTH);
@@ -27,30 +30,52 @@ server.on("upgrade", (request, socket, head) => {
   });
 });
 
+let openRoles = new Set([RUNNER_ROLE, SEEKER_ROLE]);
+
 let wsConnections = {};
 
 wsServer.on("connection", (websocketConnection, connectionRequest) => {
+  // if we have 2 players already, reject connection
+  if (openRoles.size == 0) {
+    websocketConnection.close();
+    return;
+  }
   let screenId = (Math.random() + 1).toString(36).substring(7);
-  wsConnections[screenId] = websocketConnection;
+  let role = openRoles.values().next().value;
+  wsConnections[screenId] = {
+    conn: websocketConnection,
+    role,
+  };
   console.log(
-    `New Connection accepted. Total Clients: ${
+    `New Connection accepted ${screenId}. Total Clients: ${
       Object.keys(wsConnections).length
     }`
   );
   websocketConnection.send(
     JSON.stringify({
       type: "init",
-      data: { screenId, blockLength: BLOCK_LENGTH, ...mazeObject },
+      data: {
+        screenId,
+        blockLength: BLOCK_LENGTH,
+        ...mazeObject,
+        role,
+      },
     })
   );
+  openRoles = openRoles.slice(1, openRoles.length);
   websocketConnection.on("message", (data) => {
     data = JSON.parse(data);
-    console.log("recvd: ", JSON.stringify(data));
+    // console.log("recvd: ", JSON.stringify(data));
     for (let screenId in wsConnections) {
       if (screenId !== data.screenId) {
-        let conn = wsConnections[screenId];
+        let conn = wsConnections[screenId].conn;
         conn.send(JSON.stringify(data));
       }
     }
+  });
+
+  websocketConnection.on("close", () => {
+    openRoles.add(role);
+    console.log(`Client with Screen ID ${screenId} Disconnected`);
   });
 });
