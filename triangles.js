@@ -177,7 +177,11 @@ export function getMazeObject(blockLength) {
         [0, 0, blockLength * maze.length - 0.00025],
         [0, blockHeight, blockLength * maze.length - 0.00025],
         [blockLength * maze.length, 0, blockLength * maze.length - 0.00025],
-        [blockLength * maze.length, blockHeight, blockLength * maze.length - 0.00025],
+        [
+          blockLength * maze.length,
+          blockHeight,
+          blockLength * maze.length - 0.00025,
+        ],
         //Right
         [0.00025, 0, 0],
         [0.00025, blockHeight, 0],
@@ -187,7 +191,11 @@ export function getMazeObject(blockLength) {
         [blockLength * maze.length - 0.00025, 0, 0],
         [blockLength * maze.length - 0.00025, blockHeight, 0],
         [blockLength * maze.length - 0.00025, 0, blockLength * maze.length],
-        [blockLength * maze.length - 0.00025, blockHeight, blockLength * maze.length],
+        [
+          blockLength * maze.length - 0.00025,
+          blockHeight,
+          blockLength * maze.length,
+        ],
       ],
       normals: [
         [0, 0, -1],
@@ -287,11 +295,27 @@ export function getMazeObject(blockLength) {
           rightDownBack: [blockLength * i, -0.0005, blockLength * j],
           rightUpBack: [blockLength * i, blockHeight + 0.0005, blockLength * j],
           leftDownBack: [blockLength * (i + 1), -0.0005, blockLength * j],
-          leftUpBack: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * j],
+          leftUpBack: [
+            blockLength * (i + 1),
+            blockHeight + 0.0005,
+            blockLength * j,
+          ],
           rightDownForward: [blockLength * i, -0.0005, blockLength * (j + 1)],
-          rightUpForward: [blockLength * i, blockHeight + 0.0005, blockLength * (j + 1)],
-          leftDownForward: [blockLength * (i + 1), -0.0005, blockLength * (j + 1)],
-          leftUpForward: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * (j + 1)],
+          rightUpForward: [
+            blockLength * i,
+            blockHeight + 0.0005,
+            blockLength * (j + 1),
+          ],
+          leftDownForward: [
+            blockLength * (i + 1),
+            -0.0005,
+            blockLength * (j + 1),
+          ],
+          leftUpForward: [
+            blockLength * (i + 1),
+            blockHeight + 0.0005,
+            blockLength * (j + 1),
+          ],
         };
         let wall = {
           id: "Wall",
