@@ -5,6 +5,11 @@ var blockLength;
 var screenId;
 var gameConnected = false;
 var currentEnemyPosition;
+var catchDistance;
+var gameOver = false;
+var role;
+var winner;
+var defaultEye; // default eye position in world space
 
 function initGame() {
   socket = new WebSocket("ws://localhost:3001/ws");
@@ -18,10 +23,17 @@ function initGame() {
       map = socketData?.data?.map;
       blockLength = socketData?.data?.blockLength;
       screenId = socketData?.data?.screenId;
+      catchDistance = socketData?.data?.catchDistance;
+      role = socketData?.data?.role;
+      defaultEye = vec3.fromValues(...socketData?.data?.start);
       gameConnected = true;
-      main(blockLength);
+      main();
+    } else if (socketData?.type === "game_over") {
+      gameOver = true;
     } else {
       currentEnemyPosition = socketData;
+      let winnerRole = socketData?.data?.winner;
+      winner = winnerRole === role;
     }
     console.log(socketData);
   };

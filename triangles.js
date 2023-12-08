@@ -1,4 +1,4 @@
-import {frogModel} from "./model.js";
+import { frogModel } from "./model.js";
 
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -7,21 +7,31 @@ export function getRandomInt(min, max) {
 export function getMazeObject(blockLength) {
   function createMaze() {
     let girdSize = 10;
-    let grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
-    let maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
+    let grid = [...Array(girdSize).keys()].map((i) =>
+      new Array(girdSize).fill(0)
+    );
+    let maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
+      new Array(2 * girdSize - 1).fill("#")
+    );
     let queue = [[0, 0]];
     grid[0][0] = 1;
     maze[0][0] = ".";
     do {
       let currNode = queue[queue.length - 1];
       let options = [];
-      if (currNode[0] + 1 < girdSize && grid[currNode[0] + 1][currNode[1]] != 1) {
+      if (
+        currNode[0] + 1 < girdSize &&
+        grid[currNode[0] + 1][currNode[1]] != 1
+      ) {
         options.push("Right");
       }
       if (currNode[0] - 1 > -1 && grid[currNode[0] - 1][currNode[1]] != 1) {
         options.push("Left");
       }
-      if (currNode[1] + 1 < girdSize && grid[currNode[0]][currNode[1] + 1] != 1) {
+      if (
+        currNode[1] + 1 < girdSize &&
+        grid[currNode[0]][currNode[1] + 1] != 1
+      ) {
         options.push("Down");
       }
       if (currNode[1] - 1 > -1 && grid[currNode[0]][currNode[1] - 1] != 1) {
@@ -279,7 +289,11 @@ export function getMazeObject(blockLength) {
           rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
           rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
           leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
-          leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
+          leftUpForward: [
+            blockLength * (i + 1),
+            blockHeight,
+            blockLength * (j + 1),
+          ],
         };
         let wall = {
           id: "Wall",
@@ -416,9 +430,21 @@ export function getMazeObject(blockLength) {
     leftDownBack: [(2 * blockLength) / 3, blockHeight / 3, blockLength / 3],
     leftUpBack: [(2 * blockLength) / 3, (2 * blockHeight) / 3, blockLength / 3],
     rightDownForward: [blockLength / 3, blockHeight / 3, (2 * blockLength) / 3],
-    rightUpForward: [blockLength / 3, (2 * blockHeight) / 3, (2 * blockLength) / 3],
-    leftDownForward: [(2 * blockLength) / 3, blockHeight / 3, (2 * blockLength) / 3],
-    leftUpForward: [(2 * blockLength) / 3, (2 * blockHeight) / 3, (2 * blockLength) / 3],
+    rightUpForward: [
+      blockLength / 3,
+      (2 * blockHeight) / 3,
+      (2 * blockLength) / 3,
+    ],
+    leftDownForward: [
+      (2 * blockLength) / 3,
+      blockHeight / 3,
+      (2 * blockLength) / 3,
+    ],
+    leftUpForward: [
+      (2 * blockLength) / 3,
+      (2 * blockHeight) / 3,
+      (2 * blockLength) / 3,
+    ],
   };
 
   let playerModel = {
@@ -551,5 +577,32 @@ export function getMazeObject(blockLength) {
   return { maze, map };
 }
 
-
 let frog = frogModel;
+
+export function getStartPositions(maze, blockLength) {
+  let seekerPosition;
+  let runnerPosition;
+  for (let y = 0; y < maze.length; y++) {
+    for (let x = 0; x < maze[0].length; x++) {
+      if (maze[y][x] === ".") {
+        seekerPosition = [
+          y * blockLength + blockLength / 2,
+          blockLength / 2,
+          x * blockLength + blockLength / 2,
+        ];
+      }
+    }
+  }
+  for (let y = maze.length - 1; y >= 0; y--) {
+    for (let x = 0; x < maze[0].length; x++) {
+      if (maze[y][x] === ".") {
+        runnerPosition = [
+          y * blockLength + blockLength / 2,
+          blockLength / 2,
+          x * blockLength + blockLength / 2,
+        ];
+      }
+    }
+  }
+  return [seekerPosition, runnerPosition];
+}

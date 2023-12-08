@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import express from "express";
-import { getMazeObject } from "./triangles.js";
+import { getMazeObject, getStartPositions } from "./triangles.js";
 
 const CANVAS_WIDTH = 1024;
 const CANVAS_HEIGHT = 512;
@@ -10,9 +10,15 @@ const BLOCK_LENGTH = CANVAS_WIDTH / 1000;
 const RUNNER_ROLE = "runner";
 const SEEKER_ROLE = "seeker";
 
+const CATCH_DISTANCE = 0.5;
+
 let app = express();
 
 let mazeObject = getMazeObject(BLOCK_LENGTH);
+let [seekerStart, runnerStart] = getStartPositions(
+  mazeObject.maze,
+  BLOCK_LENGTH
+);
 
 app.get("/", async (req, res) => {
   res.send("helo").status(200);
@@ -59,10 +65,12 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
         blockLength: BLOCK_LENGTH,
         ...mazeObject,
         role,
+        catchDistance: CATCH_DISTANCE,
+        start: role === SEEKER_ROLE ? seekerStart : runnerStart,
       },
     })
   );
-  openRoles = openRoles.slice(1, openRoles.length);
+  openRoles.delete(role);
   websocketConnection.on("message", (data) => {
     data = JSON.parse(data);
     // console.log("recvd: ", JSON.stringify(data));
