@@ -1,4 +1,4 @@
-import {frogModel} from "./model.js";
+import { frogModel } from "./model.js";
 
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -67,6 +67,8 @@ export function getMazeObject(blockLength) {
         if (maze[i][j] == "#") {
           if (Math.random() < 0.1) {
             maze[i][j] = ".";
+          } else if (Math.random() < 0.1) {
+            maze[i][j] = ",";
           }
         }
       }
@@ -157,25 +159,25 @@ export function getMazeObject(blockLength) {
       },
       vertices: [
         //Back
-        [0, 0, 0],
-        [0, blockHeight, 0],
-        [blockLength * maze.length, 0, 0],
-        [blockLength * maze.length, blockHeight, 0],
+        [0, 0, 0.00025],
+        [0, blockHeight, 0.00025],
+        [blockLength * maze.length, 0, 0.00025],
+        [blockLength * maze.length, blockHeight, 0.00025],
         //Front
-        [0, 0, blockLength * maze.length],
-        [0, blockHeight, blockLength * maze.length],
-        [blockLength * maze.length, 0, blockLength * maze.length],
-        [blockLength * maze.length, blockHeight, blockLength * maze.length],
+        [0, 0, blockLength * maze.length - 0.00025],
+        [0, blockHeight, blockLength * maze.length - 0.00025],
+        [blockLength * maze.length, 0, blockLength * maze.length - 0.00025],
+        [blockLength * maze.length, blockHeight, blockLength * maze.length - 0.00025],
         //Right
-        [0, 0, 0],
-        [0, blockHeight, 0],
-        [0, 0, blockLength * maze.length],
-        [0, blockHeight, blockLength * maze.length],
+        [0.00025, 0, 0],
+        [0.00025, blockHeight, 0],
+        [0.00025, 0, blockLength * maze.length],
+        [0.00025, blockHeight, blockLength * maze.length],
         //Left
-        [blockLength * maze.length, 0, 0],
-        [blockLength * maze.length, blockHeight, 0],
-        [blockLength * maze.length, 0, blockLength * maze.length],
-        [blockLength * maze.length, blockHeight, blockLength * maze.length],
+        [blockLength * maze.length - 0.00025, 0, 0],
+        [blockLength * maze.length - 0.00025, blockHeight, 0],
+        [blockLength * maze.length - 0.00025, 0, blockLength * maze.length],
+        [blockLength * maze.length - 0.00025, blockHeight, blockLength * maze.length],
       ],
       normals: [
         [0, 0, -1],
@@ -270,16 +272,16 @@ export function getMazeObject(blockLength) {
 
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze.length; j++) {
-      if (maze[i][j] == "#") {
+      if (maze[i][j] == "#" || maze[i][j] == ",") {
         let c = {
-          rightDownBack: [blockLength * i, 0, blockLength * j],
-          rightUpBack: [blockLength * i, blockHeight, blockLength * j],
-          leftDownBack: [blockLength * (i + 1), 0, blockLength * j],
-          leftUpBack: [blockLength * (i + 1), blockHeight, blockLength * j],
-          rightDownForward: [blockLength * i, 0, blockLength * (j + 1)],
-          rightUpForward: [blockLength * i, blockHeight, blockLength * (j + 1)],
-          leftDownForward: [blockLength * (i + 1), 0, blockLength * (j + 1)],
-          leftUpForward: [blockLength * (i + 1), blockHeight, blockLength * (j + 1)],
+          rightDownBack: [blockLength * i, -0.0005, blockLength * j],
+          rightUpBack: [blockLength * i, blockHeight + 0.0005, blockLength * j],
+          leftDownBack: [blockLength * (i + 1), -0.0005, blockLength * j],
+          leftUpBack: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * j],
+          rightDownForward: [blockLength * i, -0.0005, blockLength * (j + 1)],
+          rightUpForward: [blockLength * i, blockHeight + 0.0005, blockLength * (j + 1)],
+          leftDownForward: [blockLength * (i + 1), -0.0005, blockLength * (j + 1)],
+          leftUpForward: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * (j + 1)],
         };
         let wall = {
           id: "Wall",
@@ -288,7 +290,7 @@ export function getMazeObject(blockLength) {
             diffuse: [0.5, 0.0, 0.0],
             specular: [0.3, 0.0, 0.0],
             n: 5,
-            alpha: 1.0,
+            alpha: maze[i][j] == "#" ? 1.0 : 0.3,
             texture: "wall2.png",
           },
           vertices: [
@@ -550,6 +552,5 @@ export function getMazeObject(blockLength) {
   map.push(frog);
   return { maze, map };
 }
-
 
 let frog = frogModel;

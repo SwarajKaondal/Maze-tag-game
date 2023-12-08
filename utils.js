@@ -841,14 +841,18 @@ function loadSortedObjects() {
 
 function loadMinimap() {
   let size = 10;
-  minimap.fillStyle = "#5A5A5A";
+  minimap.fillStyle = "#949494";
   minimap.fillRect(0, 0, size * (maze.length + 2), size * (maze.length + 2));
   minimap.fillStyle = "#000000";
   minimap.fillRect(size, size, size * maze.length, size * maze.length);
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze.length; j++) {
       if (maze[i][j] == "#") {
-        minimap.fillStyle = "#5A5A5A";
+        minimap.fillStyle = "#949494";
+        minimap.fillRect(size * (i + 1), size * (j + 1), size, size);
+      }
+      if (maze[i][j] == ",") {
+        minimap.fillStyle = "#bababa";
         minimap.fillRect(size * (i + 1), size * (j + 1), size, size);
       }
     }
@@ -917,16 +921,16 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     forward: false,
     back: false,
   };
-  if (currPosition[1] > 0 && mazeArray[currPosition[1] - 1][currPosition[0]] === "#") {
+  if ((currPosition[1] > 0 && mazeArray[currPosition[1] - 1][currPosition[0]] === "#") || currPosition[1] == 0) {
     adjacentBlocks.back = true;
   }
-  if (currPosition[1] < mazeArray.length - 1 && mazeArray[currPosition[1] + 1][currPosition[0]] === "#") {
+  if ((currPosition[1] < mazeArray.length - 1 && mazeArray[currPosition[1] + 1][currPosition[0]] === "#") || currPosition[1] == maze.length - 1) {
     adjacentBlocks.forward = true;
   }
-  if (currPosition[0] > 0 && mazeArray[currPosition[1]][currPosition[0] - 1] === "#") {
+  if ((currPosition[0] > 0 && mazeArray[currPosition[1]][currPosition[0] - 1] === "#") || currPosition[0] == 0) {
     adjacentBlocks.right = true;
   }
-  if (currPosition[0] < mazeArray[0].length - 1 && mazeArray[currPosition[1]][currPosition[0] + 1] === "#") {
+  if ((currPosition[0] < mazeArray[0].length - 1 && mazeArray[currPosition[1]][currPosition[0] + 1] === "#") || currPosition[0] == maze.length - 1) {
     adjacentBlocks.left = true;
   }
   return adjacentBlocks;
