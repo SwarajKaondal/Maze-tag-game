@@ -6,31 +6,21 @@ export function getRandomInt(min, max) {
 
 export function getMazeObject(blockLength, girdSize) {
   function createMaze() {
-    let grid = [...Array(girdSize).keys()].map((i) =>
-      new Array(girdSize).fill(0)
-    );
-    let maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
-      new Array(2 * girdSize - 1).fill("#")
-    );
+    let grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
+    let maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
     let queue = [[0, 0]];
     grid[0][0] = 1;
     maze[0][0] = ".";
     do {
       let currNode = queue[queue.length - 1];
       let options = [];
-      if (
-        currNode[0] + 1 < girdSize &&
-        grid[currNode[0] + 1][currNode[1]] != 1
-      ) {
+      if (currNode[0] + 1 < girdSize && grid[currNode[0] + 1][currNode[1]] != 1) {
         options.push("Right");
       }
       if (currNode[0] - 1 > -1 && grid[currNode[0] - 1][currNode[1]] != 1) {
         options.push("Left");
       }
-      if (
-        currNode[1] + 1 < girdSize &&
-        grid[currNode[0]][currNode[1] + 1] != 1
-      ) {
+      if (currNode[1] + 1 < girdSize && grid[currNode[0]][currNode[1] + 1] != 1) {
         options.push("Down");
       }
       if (currNode[1] - 1 > -1 && grid[currNode[0]][currNode[1] - 1] != 1) {
@@ -86,7 +76,7 @@ export function getMazeObject(blockLength, girdSize) {
         }
       }
     }
-
+    maze = addExits(maze);
     return maze;
   }
 
@@ -180,11 +170,7 @@ export function getMazeObject(blockLength, girdSize) {
         [0, 0, blockLength * maze.length - 0.00025],
         [0, blockHeight, blockLength * maze.length - 0.00025],
         [blockLength * maze.length, 0, blockLength * maze.length - 0.00025],
-        [
-          blockLength * maze.length,
-          blockHeight,
-          blockLength * maze.length - 0.00025,
-        ],
+        [blockLength * maze.length, blockHeight, blockLength * maze.length - 0.00025],
         //Right
         [0.00025, 0, 0],
         [0.00025, blockHeight, 0],
@@ -194,11 +180,7 @@ export function getMazeObject(blockLength, girdSize) {
         [blockLength * maze.length - 0.00025, 0, 0],
         [blockLength * maze.length - 0.00025, blockHeight, 0],
         [blockLength * maze.length - 0.00025, 0, blockLength * maze.length],
-        [
-          blockLength * maze.length - 0.00025,
-          blockHeight,
-          blockLength * maze.length,
-        ],
+        [blockLength * maze.length - 0.00025, blockHeight, blockLength * maze.length],
       ],
       normals: [
         [0, 0, -1],
@@ -256,39 +238,6 @@ export function getMazeObject(blockLength, girdSize) {
         [13, 14, 15],
       ],
     },
-    {
-      id: "Exit",
-      material: {
-        ambient: [0.2, 0.0, 0.0],
-        diffuse: [0.5, 0.0, 0.0],
-        specular: [0.3, 0.0, 0.0],
-        n: 5,
-        alpha: 1.0,
-        texture: "exit.jpg",
-      },
-      vertices: [
-        [0, 0, 0.0005],
-        [0, blockHeight, 0.0005],
-        [blockLength, 0, 0.0005],
-        [blockLength, blockHeight, 0.0005],
-      ],
-      normals: [
-        [0, 0, 1],
-        [0, 0, 1],
-        [0, 0, 1],
-        [0, 0, 1],
-      ],
-      uvs: [
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-      ],
-      triangles: [
-        [0, 1, 2],
-        [1, 2, 3],
-      ],
-    },
   ];
 
   for (let i = 0; i < maze.length; i++) {
@@ -298,27 +247,11 @@ export function getMazeObject(blockLength, girdSize) {
           rightDownBack: [blockLength * i, -0.0005, blockLength * j],
           rightUpBack: [blockLength * i, blockHeight + 0.0005, blockLength * j],
           leftDownBack: [blockLength * (i + 1), -0.0005, blockLength * j],
-          leftUpBack: [
-            blockLength * (i + 1),
-            blockHeight + 0.0005,
-            blockLength * j,
-          ],
+          leftUpBack: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * j],
           rightDownForward: [blockLength * i, -0.0005, blockLength * (j + 1)],
-          rightUpForward: [
-            blockLength * i,
-            blockHeight + 0.0005,
-            blockLength * (j + 1),
-          ],
-          leftDownForward: [
-            blockLength * (i + 1),
-            -0.0005,
-            blockLength * (j + 1),
-          ],
-          leftUpForward: [
-            blockLength * (i + 1),
-            blockHeight + 0.0005,
-            blockLength * (j + 1),
-          ],
+          rightUpForward: [blockLength * i, blockHeight + 0.0005, blockLength * (j + 1)],
+          leftDownForward: [blockLength * (i + 1), -0.0005, blockLength * (j + 1)],
+          leftUpForward: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * (j + 1)],
         };
         let wall = {
           id: "Wall",
@@ -446,160 +379,58 @@ export function getMazeObject(blockLength, girdSize) {
         };
         map.push(wall);
       }
+
+      if (maze[i][j] == "=") {
+        let normal;
+        let vertices;
+        if (j == maze.length - 1) {
+          vertices = [
+            [blockLength * i, 0, blockLength * (j + 1) - 0.0003],
+            [blockLength * i, blockHeight, blockLength * (j + 1) - 0.0003],
+            [blockLength * (i + 1), 0, blockLength * (j + 1) - 0.0003],
+            [blockLength * (i + 1), blockHeight, blockLength * (j + 1) - 0.0003],
+          ];
+          normal = [0, 0, -1];
+        } else if (i == maze.length - 1) {
+          vertices = [
+            [blockLength * (i + 1) - 0.0003, 0, blockLength * j],
+            [blockLength * (i + 1) - 0.0003, blockHeight, blockLength * j],
+            [blockLength * (i + 1) - 0.0003, 0, blockLength * (j + 1)],
+            [blockLength * (i + 1) - 0.0003, blockHeight, blockLength * (j + 1)],
+          ];
+          normal = [-1, 0, 0];
+        }
+        let exit = {
+          id: "Exit",
+          material: {
+            ambient: [0.2, 0.0, 0.0],
+            diffuse: [0.5, 0.0, 0.0],
+            specular: [0.3, 0.0, 0.0],
+            n: 5,
+            alpha: 1.0,
+            texture: "exit.jpg",
+          },
+          vertices: vertices,
+          normals: [...Array(4).keys()].map((i) => normal),
+          uvs: [
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+          ],
+          triangles: [
+            [0, 1, 2],
+            [1, 2, 3],
+          ],
+        };
+        map.push(exit);
+      }
     }
   }
 
-  let playerModelCordinates = {
-    rightDownBack: [blockLength / 3, blockHeight / 3, blockLength / 3],
-    rightUpBack: [blockLength / 3, (2 * blockHeight) / 3, blockLength / 3],
-    leftDownBack: [(2 * blockLength) / 3, blockHeight / 3, blockLength / 3],
-    leftUpBack: [(2 * blockLength) / 3, (2 * blockHeight) / 3, blockLength / 3],
-    rightDownForward: [blockLength / 3, blockHeight / 3, (2 * blockLength) / 3],
-    rightUpForward: [
-      blockLength / 3,
-      (2 * blockHeight) / 3,
-      (2 * blockLength) / 3,
-    ],
-    leftDownForward: [
-      (2 * blockLength) / 3,
-      blockHeight / 3,
-      (2 * blockLength) / 3,
-    ],
-    leftUpForward: [
-      (2 * blockLength) / 3,
-      (2 * blockHeight) / 3,
-      (2 * blockLength) / 3,
-    ],
-  };
-
-  let playerModel = {
-    id: "Frog",
-    material: {
-      ambient: [0.2, 0.0, 0.0],
-      diffuse: [0.5, 0.0, 0.0],
-      specular: [0.3, 0.0, 0.0],
-      n: 5,
-      alpha: 1.0,
-      texture: "frog1.png",
-    },
-    vertices: [
-      //Back Face
-      playerModelCordinates.rightDownBack,
-      playerModelCordinates.rightUpBack,
-      playerModelCordinates.leftDownBack,
-      playerModelCordinates.leftUpBack,
-      //Front Face
-      playerModelCordinates.rightDownForward,
-      playerModelCordinates.rightUpForward,
-      playerModelCordinates.leftDownForward,
-      playerModelCordinates.leftUpForward,
-      //Top Face
-      playerModelCordinates.rightUpBack,
-      playerModelCordinates.rightUpForward,
-      playerModelCordinates.leftUpBack,
-      playerModelCordinates.leftUpForward,
-      //Bottom Face
-      playerModelCordinates.rightDownBack,
-      playerModelCordinates.rightDownForward,
-      playerModelCordinates.leftDownBack,
-      playerModelCordinates.leftDownForward,
-      //Right Face
-      playerModelCordinates.rightUpBack,
-      playerModelCordinates.rightUpForward,
-      playerModelCordinates.rightDownBack,
-      playerModelCordinates.rightDownForward,
-      //Left Face
-      playerModelCordinates.leftUpBack,
-      playerModelCordinates.leftUpForward,
-      playerModelCordinates.leftDownBack,
-      playerModelCordinates.leftDownForward,
-    ],
-    normals: [
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-
-      [0, 0, 1],
-      [0, 0, 1],
-      [0, 0, 1],
-      [0, 0, 1],
-
-      [0, 1, 0],
-      [0, 1, 0],
-      [0, 1, 0],
-      [0, 1, 0],
-
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-
-      [1, 0, 0],
-      [1, 0, 0],
-      [1, 0, 0],
-      [1, 0, 0],
-
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-    ],
-    uvs: [
-      [0.5, 0],
-      [0.5, 0.5],
-      [0, 0],
-      [0, 0.5],
-
-      [0.5, 0.5],
-      [0.5, 1],
-      [0, 0.5],
-      [0, 1],
-
-      [0.5, 0],
-      [0.5, 0.5],
-      [0, 0],
-      [0, 0.5],
-
-      [0.5, 0],
-      [0.5, 0.5],
-      [0, 0],
-      [0, 0.5],
-
-      [1, 1],
-      [0.5, 1],
-      [1, 0.5],
-      [0.5, 0.5],
-
-      [1, 1],
-      [0.5, 1],
-      [1, 0.5],
-      [0.5, 0.5],
-    ],
-    triangles: [
-      [0, 1, 2],
-      [1, 2, 3],
-
-      [4, 5, 6],
-      [5, 6, 7],
-
-      [8, 9, 10],
-      [9, 10, 11],
-
-      [12, 13, 14],
-      [13, 14, 15],
-
-      [16, 17, 18],
-      [17, 18, 19],
-
-      [20, 21, 22],
-      [21, 22, 23],
-    ],
-  };
-  // map.push(playerModel);
-
   map.push(frog);
   map.push(thom);
+
   return { maze, map };
 }
 
@@ -612,22 +443,14 @@ export function getStartPositions(maze, blockLength) {
   for (let y = 0; y < maze.length; y++) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
-        seekerPosition = [
-          y * blockLength + blockLength / 2,
-          blockLength / 2,
-          x * blockLength + blockLength / 2,
-        ];
+        seekerPosition = [y * blockLength + blockLength / 2, blockLength / 2, x * blockLength + blockLength / 2];
       }
     }
   }
   for (let y = maze.length - 1; y >= 0; y--) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
-        runnerPosition = [
-          y * blockLength + blockLength / 2,
-          blockLength / 2,
-          x * blockLength + blockLength / 2,
-        ];
+        runnerPosition = [y * blockLength + blockLength / 2, blockLength / 2, x * blockLength + blockLength / 2];
       }
     }
   }
@@ -640,10 +463,7 @@ export function addExits(maze) {
 
   for (let x = 0; x < maze[0].length; x++) {
     if (maze[maze.length - 1][x] === ".") {
-      if (
-        Math.abs(x - maze[0].length / 2) <
-        Math.abs(closestX - maze[0].length / 2)
-      ) {
+      if (Math.abs(x - maze[0].length / 2) < Math.abs(closestX - maze[0].length / 2)) {
         closestX = x;
       }
     }
@@ -651,9 +471,7 @@ export function addExits(maze) {
 
   for (let y = 0; y < maze.length; y++) {
     if (maze[y][maze[0].length - 1] === ".") {
-      if (
-        Math.abs(y - maze.length / 2) < Math.abs(closestY - maze.length / 2)
-      ) {
+      if (Math.abs(y - maze.length / 2) < Math.abs(closestY - maze.length / 2)) {
         closestY = y;
       }
     }
