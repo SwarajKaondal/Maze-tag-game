@@ -1,12 +1,11 @@
-import { frogModel } from "./model.js";
+import { frogModel, thomModel } from "./model.js";
 
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function getMazeObject(blockLength) {
+export function getMazeObject(blockLength, girdSize) {
   function createMaze() {
-    let girdSize = 10;
     let grid = [...Array(girdSize).keys()].map((i) =>
       new Array(girdSize).fill(0)
     );
@@ -261,7 +260,7 @@ export function getMazeObject(blockLength) {
         specular: [0.3, 0.0, 0.0],
         n: 5,
         alpha: 1.0,
-        texture: "door1.jpg",
+        texture: "exit.jpg",
       },
       vertices: [
         [0, 0, 0.0005],
@@ -596,10 +595,12 @@ export function getMazeObject(blockLength) {
   // map.push(playerModel);
 
   map.push(frog);
+  map.push(thom);
   return { maze, map };
 }
 
 let frog = frogModel;
+let thom = thomModel;
 
 export function getStartPositions(maze, blockLength) {
   let seekerPosition;
@@ -627,4 +628,35 @@ export function getStartPositions(maze, blockLength) {
     }
   }
   return [seekerPosition, runnerPosition];
+}
+
+export function addExits(maze) {
+  let closestY = 0;
+  let closestX = 0;
+
+  for (let x = 0; x < maze[0].length; x++) {
+    if (maze[maze.length - 1][x] === ".") {
+      if (
+        Math.abs(x - maze[0].length / 2) <
+        Math.abs(closestX - maze[0].length / 2)
+      ) {
+        closestX = x;
+      }
+    }
+  }
+
+  for (let y = 0; y < maze.length; y++) {
+    if (maze[y][maze[0].length - 1] === ".") {
+      if (
+        Math.abs(y - maze.length / 2) < Math.abs(closestY - maze.length / 2)
+      ) {
+        closestY = y;
+      }
+    }
+  }
+
+  maze[closestY][maze[0].length - 1] = "=";
+  maze[maze.length - 1][closestX] = "=";
+
+  return maze;
 }

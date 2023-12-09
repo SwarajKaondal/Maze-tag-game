@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import express from "express";
-import { getMazeObject, getStartPositions } from "./triangles.js";
+import { getMazeObject, getStartPositions, addExits } from "./triangles.js";
 
 const CANVAS_WIDTH = 1024;
 const CANVAS_HEIGHT = 512;
@@ -11,10 +11,12 @@ const RUNNER_ROLE = "runner";
 const SEEKER_ROLE = "seeker";
 
 const CATCH_DISTANCE = 0.5;
+const GRID_SIZE = 10;
 
 let app = express();
 
-let mazeObject = getMazeObject(BLOCK_LENGTH);
+let mazeObject = getMazeObject(BLOCK_LENGTH, GRID_SIZE);
+mazeObject.maze = addExits(mazeObject.maze);
 let [seekerStart, runnerStart] = getStartPositions(
   mazeObject.maze,
   BLOCK_LENGTH
@@ -68,6 +70,7 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
         catchDistance: CATCH_DISTANCE,
         start: role === SEEKER_ROLE ? seekerStart : runnerStart,
         transparent: SEEKER_ROLE,
+        gridSize: GRID_SIZE,
       },
     })
   );
