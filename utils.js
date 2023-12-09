@@ -3,8 +3,8 @@
 /* assignment specific globals */
 const INPUT_TRIANGLES_URL = "triangles.json"; // triangles file loc
 // triangles file loc
-const INPUT_ELLIPSOIDS_URL = "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
-var defaultCenter = vec3.fromValues(0.25, 0.25, 0.5); // default view direction in world space
+const INPUT_ELLIPSOIDS_URL =
+  "https://ncsucgclass.github.io/prog3/ellipsoids.json"; // ellipsoids file loc
 var defaultUp = vec3.fromValues(0, 1, 0); // default view up vector
 var lightAmbient = vec3.fromValues(1, 1, 1); // default light ambient emission
 var lightDiffuse = vec3.fromValues(1, 1, 1); // default light diffuse emission
@@ -51,7 +51,7 @@ const dirEnum = { NEGATIVE: -1, POSITIVE: 1 }; // enumerated rotation direction
 
 /* interaction variables */
 var Eye; // eye position in world space
-var Center = vec3.clone(defaultCenter); // view direction in world space
+var Center; // view direction in world space
 var Up = vec3.clone(defaultUp); // view up vector in world space
 
 // ----------------
@@ -875,6 +875,11 @@ function loadStuff() {
 }
 
 function main() {
+  Center = vec3.fromValues(
+    defaultEye[0] - 0.1,
+    defaultEye[1] - 0.1,
+    defaultEye[2] - 0.1
+  );
   Eye = vec3.clone(defaultEye);
 
   setupWebGL(); // set up the webGL environment
@@ -949,39 +954,59 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     rightForward: false,
     leftForward: false,
   };
-
-  if (currentEnemyPosition.transparent === currentEnemyPosition.role)
-    if ((currPosition[1] > 0 && blockingWalls.includes(mazeArray[currPosition[1] - 1][currPosition[0]])) || currPosition[1] == 0) {
-      adjacentBlocks.back = true;
-    }
   if (
-    (currPosition[1] < mazeArray.length - 1 && blockingWalls.includes(mazeArray[currPosition[1] + 1][currPosition[0]])) ||
+    (currPosition[1] > 0 &&
+      mazeArray[currPosition[1] - 1][currPosition[0]] === "#") ||
+    currPosition[1] == 0
+  ) {
+    adjacentBlocks.back = true;
+  }
+  if (
+    (currPosition[1] < mazeArray.length - 1 &&
+      mazeArray[currPosition[1] + 1][currPosition[0]] === "#") ||
     currPosition[1] == maze.length - 1
   ) {
     adjacentBlocks.forward = true;
   }
-  if ((currPosition[0] > 0 && blockingWalls.includes(mazeArray[currPosition[1]][currPosition[0] - 1])) || currPosition[0] == 0) {
+  if (
+    (currPosition[0] > 0 &&
+      mazeArray[currPosition[1]][currPosition[0] - 1] === "#") ||
+    currPosition[0] == 0
+  ) {
     adjacentBlocks.right = true;
   }
   if (
-    (currPosition[0] < mazeArray[0].length - 1 && blockingWalls.includes(mazeArray[currPosition[1]][currPosition[0] + 1])) ||
+    (currPosition[0] < mazeArray[0].length - 1 &&
+      mazeArray[currPosition[1]][currPosition[0] + 1] === "#") ||
     currPosition[0] == maze.length - 1
   ) {
     adjacentBlocks.left = true;
   }
-  if (currPosition[0] - 1 > -1 && currPosition[1] - 1 > -1 && blockingWalls.includes(mazeArray[currPosition[0] - 1][currPosition[1] - 1])) {
+  if (
+    currPosition[0] - 1 > -1 &&
+    currPosition[1] - 1 > -1 &&
+    mazeArray[currPosition[0] - 1][currPosition[1] - 1] == "#"
+  ) {
     adjacentBlocks.leftBack = true;
   }
-  if (currPosition[0] + 1 < maze.length && currPosition[1] - 1 > -1 && blockingWalls.includes(mazeArray[currPosition[0] + 1][currPosition[1] - 1])) {
+  if (
+    currPosition[0] + 1 < maze.length &&
+    currPosition[1] - 1 > -1 &&
+    mazeArray[currPosition[0] + 1][currPosition[1] - 1] == "#"
+  ) {
     adjacentBlocks.rightBack = true;
   }
-  if (currPosition[0] - 1 > -1 && currPosition[1] + 1 < maze.length && blockingWalls.includes(mazeArray[currPosition[0] - 1][currPosition[1] + 1])) {
+  if (
+    currPosition[0] - 1 > -1 &&
+    currPosition[1] + 1 < maze.length &&
+    mazeArray[currPosition[0] - 1][currPosition[1] + 1] == "#"
+  ) {
     adjacentBlocks.lefttForward = true;
   }
   if (
     currPosition[0] + 1 < maze.length &&
     currPosition[1] + 1 < maze.length &&
-    blockingWalls.includes(mazeArray[currPosition[0] + 1][currPosition[1] + 1])
+    mazeArray[currPosition[0] + 1][currPosition[1] + 1] == "#"
   ) {
     adjacentBlocks.rightForward = true;
   }

@@ -39,7 +39,7 @@ function initGame() {
       let winnerRole = socketData?.data?.winner;
       winner = winnerRole === role;
     }
-    console.log(socketData);
+    // console.log(socketData);
   };
 }
 
