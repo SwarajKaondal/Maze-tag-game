@@ -36,6 +36,7 @@ var textureAttribLoc;
 let vNormAttribLoc;
 const MOUSE_SENS = 700;
 var footstepAudio;
+var heartbeatAudio;
 var showMiniMap = false;
 
 const minimapStates = {
@@ -641,8 +642,18 @@ function sendCurrentPosition() {
   }
 }
 
+function setHeartBeatVolume() {
+  if (currentEnemyPosition !== undefined) {
+    let distance = euclideanDistance(Eye[0], Eye[2], currentEnemyPosition.position.Eye[0], currentEnemyPosition.position.Eye[2]);
+    heartbeatAudio.volume = 1 - Math.min(distance / (blockLength * 6), 1);
+  }
+}
 // render the loaded model
 function renderModels() {
+  setHeartBeatVolume();
+  if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
+    heartbeatAudio.play();
+  }
   // construct the model transform matrix, based on model state
 
   if (gameOver && !winnerAnnounced) {
@@ -871,6 +882,8 @@ function loadStuff() {
   loadSortedObjects();
   loadModels();
   footstepAudio = new Audio("./sounds/footsteps.wav");
+  footstepAudio.volume = 0.45;
+  heartbeatAudio = new Audio("./sounds/heart-beat-137135.mp3");
 }
 
 function main() {
