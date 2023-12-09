@@ -79,6 +79,10 @@ export function getMazeObject(blockLength, girdSize) {
           } else if (Math.random() < 0.1) {
             maze[i][j] = ",";
           }
+        } else if (maze[i][j] == ".") {
+          if (Math.random() < 0.01) {
+            maze[i][j] = "p";
+          }
         }
       }
     }

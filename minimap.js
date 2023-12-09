@@ -87,6 +87,15 @@ function loadMap() {
             blockSize
           );
         }
+        if (maze[i][j] == "p") {
+          minimap.fillStyle = "#0000FF";
+          minimap.fillRect(
+            blockSize * (i + 1),
+            blockSize * (j + 1),
+            blockSize,
+            blockSize
+          );
+        }
       }
     }
   }
