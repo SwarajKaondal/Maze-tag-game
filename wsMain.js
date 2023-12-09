@@ -15,10 +15,7 @@ const CATCH_DISTANCE = 0.5;
 let app = express();
 
 let mazeObject = getMazeObject(BLOCK_LENGTH);
-let [seekerStart, runnerStart] = getStartPositions(
-  mazeObject.maze,
-  BLOCK_LENGTH
-);
+let [seekerStart, runnerStart] = getStartPositions(mazeObject.maze, BLOCK_LENGTH);
 
 app.get("/", async (req, res) => {
   res.send("helo").status(200);
@@ -52,11 +49,7 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
     conn: websocketConnection,
     role,
   };
-  console.log(
-    `New Connection accepted ${screenId}. Total Clients: ${
-      Object.keys(wsConnections).length
-    }`
-  );
+  console.log(`New Connection accepted ${screenId}. Total Clients: ${Object.keys(wsConnections).length}`);
   websocketConnection.send(
     JSON.stringify({
       type: "init",
@@ -67,6 +60,7 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
         role,
         catchDistance: CATCH_DISTANCE,
         start: role === SEEKER_ROLE ? seekerStart : runnerStart,
+        transparent: RUNNER_ROLE,
       },
     })
   );

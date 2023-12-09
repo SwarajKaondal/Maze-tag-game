@@ -11,12 +11,13 @@
     <script type="text/javascript" src="gl-matrix.js"></script>
     <!-- <script defer type="text/javascript" src="triangles.js"></script> -->
     <script defer type="text/javascript" src="mainGame.js"></script>
-
+    <script defer type="text/javascript" src="minimap.js"></script>
     <script defer type="text/javascript" src="utils.js"></script>
   </head>
 
   <body>
     <canvas id="myWebGLCanvas" width="1024" height="512"></canvas>
-    <canvas id="minimap" width="300" height="300"></canvas>
+    <canvas id="minimap" width="220" height="220"></canvas>
+    <!-- keep minimap width and height multiple of (maze.length+2)-->
   </body>
 </html>

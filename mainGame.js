@@ -10,6 +10,7 @@ var gameOver = false;
 var role;
 var winner;
 var defaultEye; // default eye position in world space
+var blockingWalls = ["#"]
 
 function initGame() {
   socket = new WebSocket("ws://localhost:3001/ws");
@@ -27,6 +28,9 @@ function initGame() {
       role = socketData?.data?.role;
       defaultEye = vec3.fromValues(...socketData?.data?.start);
       gameConnected = true;
+      if(socketData?.data?.transparent === role){
+        blockingWalls.push(",")
+      }
       main();
     } else if (socketData?.type === "game_over") {
       gameOver = true;
