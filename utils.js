@@ -1177,6 +1177,9 @@ function loadStuff() {
 }
 
 function main() {
+  if (role === "seeker") {
+    viewDelta *= 1.5;
+  }
   minimapCanvas.height = (gridSize * 2 + 2) * 10;
   minimapCanvas.width = (gridSize * 2 + 2) * 10;
   console.log(role);
