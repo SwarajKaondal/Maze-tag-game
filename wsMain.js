@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
 import express from "express";
-import { getMazeObject, getStartPositions, addExits } from "./triangles.js";
+import { getMazeObject, getStartPositions } from "./triangles.js";
 
 const CANVAS_WIDTH = 1024;
 const CANVAS_HEIGHT = 512;

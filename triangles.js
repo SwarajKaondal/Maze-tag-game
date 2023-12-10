@@ -428,6 +428,45 @@ export function getMazeObject(blockLength, girdSize) {
     }
   }
 
+  const ids = ["seekerWinWall", "runnerWinWall"];
+  const textures = ["seekerWin.png", "runnerWin.jpg"];
+  for (let i = 0; i < 3; i++) {
+    let winWall = {
+      id: ids[i],
+      material: {
+        ambient: [0.2, 0.0, 0.0],
+        diffuse: [0.5, 0.0, 0.0],
+        specular: [0.3, 0.0, 0.0],
+        n: 5,
+        alpha: 1.0,
+        texture: textures[i],
+      },
+      vertices: [
+        [0, blockHeight * 3, blockLength * 2],
+        [0, blockHeight * 7, blockLength * 2],
+        [blockLength * 4, blockHeight * 3, blockLength * 2],
+        [blockLength * 4, blockHeight * 7, blockLength * 2],
+      ],
+      normals: [
+        [0, 0, -1],
+        [0, 0, -1],
+        [0, 0, -1],
+        [0, 0, -1],
+      ],
+      uvs: [
+        [1, 0],
+        [1, 1],
+        [0, 0],
+        [0, 1],
+      ],
+      triangles: [
+        [0, 1, 2],
+        [1, 2, 3],
+      ],
+    };
+    map.push(winWall);
+  }
+
   map.push(frog);
   map.push(thom);
 
@@ -450,14 +489,14 @@ export function getStartPositions(maze, blockLength) {
   for (let y = maze.length - 1; y >= 0; y--) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
-        runnerPosition = [y * blockLength + blockLength / 2, blockLength / 2, x * blockLength + blockLength / 2];
+        runnerPosition = [(30 * blockLength) / 2, blockLength / 2, blockLength / 2];
       }
     }
   }
   return [seekerPosition, runnerPosition];
 }
 
-export function addExits(maze) {
+function addExits(maze) {
   let closestY = 0;
   let closestX = 0;
 
