@@ -20,6 +20,7 @@ export function getMazeObject(blockLength, girdSize) {
     do {
       let currNode = queue[queue.length - 1];
       let options = [];
+      // console.log("node is: ", grid[1]);
       if (
         currNode[0] + 1 < girdSize &&
         grid[currNode[0] + 1][currNode[1]] != 1
@@ -552,9 +553,9 @@ export function getStartPositions(maze, blockLength) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
         runnerPosition = [
-          0 * blockLength + blockLength / 2,
+          y * blockLength + blockLength / 2,
           blockLength / 2,
-          0 * blockLength + blockLength / 2,
+          x * blockLength + blockLength / 2,
         ];
       }
     }

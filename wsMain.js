@@ -11,7 +11,7 @@ const RUNNER_ROLE = "runner";
 const SEEKER_ROLE = "seeker";
 
 const CATCH_DISTANCE = 0.5;
-const GRID_SIZE = 10;
+let GRID_SIZE = 10;
 
 let app = express();
 
@@ -74,7 +74,7 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
     })
   );
   openRoles.delete(role);
-  if (totalConnections === 2) {
+  if (totalConnections >= 2) {
     for (let screenId in wsConnections) {
       let conn = wsConnections[screenId].conn;
       conn.send(JSON.stringify({ type: "start-timer" }));
@@ -82,17 +82,30 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
   }
   websocketConnection.on("message", (data) => {
     data = JSON.parse(data);
-    // console.log("recvd: ", JSON.stringify(data));
-    for (let screenId in wsConnections) {
-      if (screenId !== data.screenId) {
+    if (data?.type === "maze-change") {
+      GRID_SIZE = parseInt(data.size);
+      mazeObject = getMazeObject(BLOCK_LENGTH, GRID_SIZE);
+      [seekerStart, runnerStart] = getStartPositions(
+        mazeObject.maze,
+        BLOCK_LENGTH
+      );
+      for (let screenId in wsConnections) {
         let conn = wsConnections[screenId].conn;
         conn.send(JSON.stringify(data));
+      }
+    } else {
+      for (let screenId in wsConnections) {
+        if (screenId !== data.screenId) {
+          let conn = wsConnections[screenId].conn;
+          conn.send(JSON.stringify(data));
+        }
       }
     }
   });
 
   websocketConnection.on("close", () => {
     openRoles.add(role);
+    delete wsConnections[screenId];
     console.log(`Client with Screen ID ${screenId} Disconnected`);
   });
 });
