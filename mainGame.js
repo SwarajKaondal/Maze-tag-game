@@ -15,7 +15,7 @@ var gridSize;
 var removedShoes = {};
 
 function initGame() {
-  socket = new WebSocket("ws://localhost:3001/ws");
+  socket = new WebSocket("ws://192.168.86.51:3001/ws");
   socket.onopen = function (e) {
     console.log("connected to server");
   };
@@ -40,8 +40,12 @@ function initGame() {
       gameOver = true;
     } else if (socketData?.type === "shoe_collected") {
       removedShoes[socketData.bootId] = true;
-      let bootPos = socketData.position;
-      map[bootPos[0]][bootPos[1]] = ".";
+      console.log(
+        `Opponent collected ${socketData.bootId}, ${socketData.position}`
+      );
+      let position = socketData.position;
+      maze[position[0]][position[1]] = ".";
+      loadMinimap();
     } else {
       currentEnemyPosition = socketData;
       let winnerRole = socketData?.data?.winner;
