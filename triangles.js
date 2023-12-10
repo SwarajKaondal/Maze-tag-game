@@ -1,4 +1,6 @@
-import { frogModel, thomModel } from "./model.js";
+import { frogModel, thomModel, bootModel } from "./model.js";
+
+const BOOT_PROBABILITY = 0.05;
 
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -80,7 +82,7 @@ export function getMazeObject(blockLength, girdSize) {
             maze[i][j] = ",";
           }
         } else if (maze[i][j] == ".") {
-          if (Math.random() < 0.01) {
+          if (Math.random() < BOOT_PROBABILITY) {
             maze[i][j] = "p";
           }
         }
@@ -293,6 +295,19 @@ export function getMazeObject(blockLength, girdSize) {
 
   for (let i = 0; i < maze.length; i++) {
     for (let j = 0; j < maze.length; j++) {
+      if (maze[i][j] === "p") {
+        let bootObject = { ...boot };
+        bootObject.vertices = [...bootObject.vertices];
+        bootObject.id = `Boot-${i}-${j}`;
+        for (let vi = 0; vi < bootObject.vertices.length; vi++) {
+          bootObject.vertices[vi] = [
+            bootObject.vertices[vi][0] + i * blockLength,
+            bootObject.vertices[vi][1],
+            bootObject.vertices[vi][2] + j * blockLength,
+          ];
+        }
+        map.push(bootObject);
+      }
       if (maze[i][j] == "#" || maze[i][j] == ",") {
         let c = {
           rightDownBack: [blockLength * i, -0.0005, blockLength * j],
@@ -600,11 +615,13 @@ export function getMazeObject(blockLength, girdSize) {
 
   map.push(frog);
   map.push(thom);
+  // map.push(boot);
   return { maze, map };
 }
 
 let frog = frogModel;
 let thom = thomModel;
+let boot = bootModel;
 
 export function getStartPositions(maze, blockLength) {
   let seekerPosition;

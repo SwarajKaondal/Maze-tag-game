@@ -61,6 +61,11 @@ var textureCoordBuffers = [];
 // ASSIGNMENT HELPER FUNCTIONS
 
 let winnerAnnounced = false;
+let bootsRotationAngle = 0;
+let bootRotationSpeed = 3;
+const BOOT_POWER_TIME = 10 * 1000;
+let bootsEnabled = false;
+let bootTimeLeft = 0;
 
 // get the JSON file from the passed URL
 function getJSONFile(url, descr) {
@@ -436,6 +441,7 @@ function handleKeyDown(event) {
 
 var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
 var minimapCanvas = document.getElementById("minimap");
+var bootTimeDisplay = document.getElementById("boots-time");
 
 let minimap = minimapCanvas.getContext("2d");
 const aspectRatio = canvas.width / canvas.height;
@@ -847,6 +853,8 @@ function setHeartBeatVolume() {
   }
 }
 // render the loaded model
+let showBoots = true;
+
 function renderModels() {
   setHeartBeatVolume();
   if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
@@ -863,8 +871,21 @@ function renderModels() {
     winnerAnnounced = true;
   }
 
+  setTimeout(() => {
+    bootsRotationAngle += bootRotationSpeed;
+    if (bootsRotationAngle >= 360) {
+      bootsRotationAngle = 0;
+    }
+  }, 20);
   let renderingTransparent = false;
   function makeModelTransform(currModel) {
+    if (currModel.id.startsWith("Boot")) {
+      currModel.xAxis = vec3.fromValues(
+        Math.sin(bootsRotationAngle * (Math.PI / 180)),
+        0,
+        Math.cos(bootsRotationAngle * (Math.PI / 180))
+      );
+    }
     if (
       ["Frog", "Thom"].includes(currModel.id) &&
       currentEnemyPosition !== undefined
@@ -972,6 +993,9 @@ function renderModels() {
 
     // make model transform, add to view project
     makeModelTransform(currSet);
+    if (removedShoes[currSet?.id] === true) {
+      return;
+    }
     mat4.multiply(pvmMatrix, pvMatrix, mMatrix); // project * view * model
     gl.uniformMatrix4fv(mMatrixULoc, false, mMatrix); // pass in the m matrix
     gl.uniformMatrix4fv(pvmMatrixULoc, false, pvmMatrix); // pass in the hpvm matrix
@@ -1235,6 +1259,13 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     rightForward: false,
     leftForward: false,
   };
+  if (mazeArray[currPosition[1]][currPosition[0]] === "p") {
+    mazeArray[currPosition[1]][currPosition[0]] = ".";
+    let bootId = `Boot-${currPosition[1]}-${currPosition[0]}`;
+    removedShoes[bootId] = true;
+    sendShoeCollectedMessage(bootId, currPosition[1], currPosition[0]);
+    handleShoeCollection();
+  }
   if (
     (currPosition[1] > 0 &&
       blockingWalls.includes(
@@ -1344,5 +1375,38 @@ function sendGameOverMessage(winner) {
         winner,
       })
     );
+  }
+}
+
+function sendShoeCollectedMessage(bootId, i, j) {
+  if (gameConnected === true) {
+    socket.send(
+      JSON.stringify({
+        type: "shoe_collected",
+        bootId,
+        position: [i, j],
+      })
+    );
+  }
+}
+
+const BOOT_DISPLAY_REFRESH = 100;
+function handleShoeCollection() {
+  bootTimeLeft += BOOT_POWER_TIME;
+
+  if (!bootsEnabled) {
+    viewDelta *= 2;
+    bootsEnabled = setInterval(() => {
+      bootTimeLeft -= BOOT_DISPLAY_REFRESH;
+
+      bootTimeDisplay.innerHTML = `You have collected Phase Boots.</br>
+    Time Remaining: ${bootTimeLeft / 1000}`;
+      if (bootTimeLeft <= 0) {
+        clearTimeout(bootsEnabled);
+        bootsEnabled = false;
+        viewDelta /= 2;
+        return;
+      }
+    }, BOOT_DISPLAY_REFRESH);
   }
 }

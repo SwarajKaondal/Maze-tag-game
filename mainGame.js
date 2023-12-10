@@ -12,6 +12,7 @@ var winner;
 var defaultEye; // default eye position in world space
 var blockingWalls = ["#"];
 var gridSize;
+var removedShoes = {};
 
 function initGame() {
   socket = new WebSocket("ws://localhost:3001/ws");
@@ -36,6 +37,10 @@ function initGame() {
       main();
     } else if (socketData?.type === "game_over") {
       gameOver = true;
+    } else if (socketData?.type === "shoe_collected") {
+      removedShoes[socketData.bootId] = true;
+      let bootPos = socketData.position;
+      map[bootPos[0]][bootPos[1]] = ".";
     } else {
       currentEnemyPosition = socketData;
       let winnerRole = socketData?.data?.winner;
