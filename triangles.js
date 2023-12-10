@@ -1,6 +1,6 @@
 import { frogModel, thomModel, bootModel } from "./model.js";
 
-const BOOT_PROBABILITY = 0.05;
+const BOOT_PROBABILITY = 0.02;
 
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -8,21 +8,31 @@ export function getRandomInt(min, max) {
 
 export function getMazeObject(blockLength, girdSize) {
   function createMaze() {
-    let grid = [...Array(girdSize).keys()].map((i) => new Array(girdSize).fill(0));
-    let maze = [...Array(2 * girdSize - 1).keys()].map((i) => new Array(2 * girdSize - 1).fill("#"));
+    let grid = [...Array(girdSize).keys()].map((i) =>
+      new Array(girdSize).fill(0)
+    );
+    let maze = [...Array(2 * girdSize - 1).keys()].map((i) =>
+      new Array(2 * girdSize - 1).fill("#")
+    );
     let queue = [[0, 0]];
     grid[0][0] = 1;
     maze[0][0] = ".";
     do {
       let currNode = queue[queue.length - 1];
       let options = [];
-      if (currNode[0] + 1 < girdSize && grid[currNode[0] + 1][currNode[1]] != 1) {
+      if (
+        currNode[0] + 1 < girdSize &&
+        grid[currNode[0] + 1][currNode[1]] != 1
+      ) {
         options.push("Right");
       }
       if (currNode[0] - 1 > -1 && grid[currNode[0] - 1][currNode[1]] != 1) {
         options.push("Left");
       }
-      if (currNode[1] + 1 < girdSize && grid[currNode[0]][currNode[1] + 1] != 1) {
+      if (
+        currNode[1] + 1 < girdSize &&
+        grid[currNode[0]][currNode[1] + 1] != 1
+      ) {
         options.push("Down");
       }
       if (currNode[1] - 1 > -1 && grid[currNode[0]][currNode[1] - 1] != 1) {
@@ -172,7 +182,11 @@ export function getMazeObject(blockLength, girdSize) {
         [0, 0, blockLength * maze.length - 0.00025],
         [0, blockHeight, blockLength * maze.length - 0.00025],
         [blockLength * maze.length, 0, blockLength * maze.length - 0.00025],
-        [blockLength * maze.length, blockHeight, blockLength * maze.length - 0.00025],
+        [
+          blockLength * maze.length,
+          blockHeight,
+          blockLength * maze.length - 0.00025,
+        ],
         //Right
         [0.00025, 0, 0],
         [0.00025, blockHeight, 0],
@@ -182,7 +196,11 @@ export function getMazeObject(blockLength, girdSize) {
         [blockLength * maze.length - 0.00025, 0, 0],
         [blockLength * maze.length - 0.00025, blockHeight, 0],
         [blockLength * maze.length - 0.00025, 0, blockLength * maze.length],
-        [blockLength * maze.length - 0.00025, blockHeight, blockLength * maze.length],
+        [
+          blockLength * maze.length - 0.00025,
+          blockHeight,
+          blockLength * maze.length,
+        ],
       ],
       normals: [
         [0, 0, -1],
@@ -262,11 +280,27 @@ export function getMazeObject(blockLength, girdSize) {
           rightDownBack: [blockLength * i, -0.0005, blockLength * j],
           rightUpBack: [blockLength * i, blockHeight + 0.0005, blockLength * j],
           leftDownBack: [blockLength * (i + 1), -0.0005, blockLength * j],
-          leftUpBack: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * j],
+          leftUpBack: [
+            blockLength * (i + 1),
+            blockHeight + 0.0005,
+            blockLength * j,
+          ],
           rightDownForward: [blockLength * i, -0.0005, blockLength * (j + 1)],
-          rightUpForward: [blockLength * i, blockHeight + 0.0005, blockLength * (j + 1)],
-          leftDownForward: [blockLength * (i + 1), -0.0005, blockLength * (j + 1)],
-          leftUpForward: [blockLength * (i + 1), blockHeight + 0.0005, blockLength * (j + 1)],
+          rightUpForward: [
+            blockLength * i,
+            blockHeight + 0.0005,
+            blockLength * (j + 1),
+          ],
+          leftDownForward: [
+            blockLength * (i + 1),
+            -0.0005,
+            blockLength * (j + 1),
+          ],
+          leftUpForward: [
+            blockLength * (i + 1),
+            blockHeight + 0.0005,
+            blockLength * (j + 1),
+          ],
         };
         let wall = {
           id: "Wall",
@@ -403,7 +437,11 @@ export function getMazeObject(blockLength, girdSize) {
             [blockLength * i, 0, blockLength * (j + 1) - 0.0003],
             [blockLength * i, blockHeight, blockLength * (j + 1) - 0.0003],
             [blockLength * (i + 1), 0, blockLength * (j + 1) - 0.0003],
-            [blockLength * (i + 1), blockHeight, blockLength * (j + 1) - 0.0003],
+            [
+              blockLength * (i + 1),
+              blockHeight,
+              blockLength * (j + 1) - 0.0003,
+            ],
           ];
           normal = [0, 0, -1];
         } else if (i == maze.length - 1) {
@@ -411,7 +449,11 @@ export function getMazeObject(blockLength, girdSize) {
             [blockLength * (i + 1) - 0.0003, 0, blockLength * j],
             [blockLength * (i + 1) - 0.0003, blockHeight, blockLength * j],
             [blockLength * (i + 1) - 0.0003, 0, blockLength * (j + 1)],
-            [blockLength * (i + 1) - 0.0003, blockHeight, blockLength * (j + 1)],
+            [
+              blockLength * (i + 1) - 0.0003,
+              blockHeight,
+              blockLength * (j + 1),
+            ],
           ];
           normal = [-1, 0, 0];
         }
@@ -459,14 +501,22 @@ export function getStartPositions(maze, blockLength) {
   for (let y = 0; y < maze.length; y++) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
-        seekerPosition = [y * blockLength + blockLength / 2, blockLength / 2, x * blockLength + blockLength / 2];
+        seekerPosition = [
+          y * blockLength + blockLength / 2,
+          blockLength / 2,
+          x * blockLength + blockLength / 2,
+        ];
       }
     }
   }
   for (let y = maze.length - 1; y >= 0; y--) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
-        runnerPosition = [y * blockLength + blockLength / 2, blockLength / 2, x * blockLength + blockLength / 2];
+        runnerPosition = [
+          y * blockLength + blockLength / 2,
+          blockLength / 2,
+          x * blockLength + blockLength / 2,
+        ];
       }
     }
   }
@@ -479,7 +529,10 @@ export function addExits(maze) {
 
   for (let x = 0; x < maze[0].length; x++) {
     if (maze[maze.length - 1][x] === ".") {
-      if (Math.abs(x - maze[0].length / 2) < Math.abs(closestX - maze[0].length / 2)) {
+      if (
+        Math.abs(x - maze[0].length / 2) <
+        Math.abs(closestX - maze[0].length / 2)
+      ) {
         closestX = x;
       }
     }
@@ -487,7 +540,9 @@ export function addExits(maze) {
 
   for (let y = 0; y < maze.length; y++) {
     if (maze[y][maze[0].length - 1] === ".") {
-      if (Math.abs(y - maze.length / 2) < Math.abs(closestY - maze.length / 2)) {
+      if (
+        Math.abs(y - maze.length / 2) < Math.abs(closestY - maze.length / 2)
+      ) {
         closestY = y;
       }
     }

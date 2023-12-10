@@ -1403,6 +1403,7 @@ function handleShoeCollection() {
     Time Remaining: ${bootTimeLeft / 1000}`;
       if (bootTimeLeft <= 0) {
         clearTimeout(bootsEnabled);
+        bootTimeDisplay.innerHTML = "";
         bootsEnabled = false;
         viewDelta /= 2;
         return;
