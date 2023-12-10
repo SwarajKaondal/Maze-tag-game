@@ -34,6 +34,7 @@ function initGame() {
       if (socketData?.data?.transparent === role) {
         blockingWalls.push(",");
       }
+      console.log(maze);
       main();
     } else if (socketData?.type === "game_over") {
       gameOver = true;
