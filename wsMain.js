@@ -16,7 +16,10 @@ const GRID_SIZE = 10;
 let app = express();
 
 let mazeObject = getMazeObject(BLOCK_LENGTH, GRID_SIZE);
-let [seekerStart, runnerStart] = getStartPositions(mazeObject.maze, BLOCK_LENGTH);
+let [seekerStart, runnerStart] = getStartPositions(
+  mazeObject.maze,
+  BLOCK_LENGTH
+);
 
 app.get("/", async (req, res) => {
   res.send("helo").status(200);
@@ -37,6 +40,7 @@ server.on("upgrade", (request, socket, head) => {
 let openRoles = new Set([RUNNER_ROLE, SEEKER_ROLE]);
 
 let wsConnections = {};
+let totalConnections = 0;
 
 wsServer.on("connection", (websocketConnection, connectionRequest) => {
   // if we have 2 players already, reject connection
@@ -50,7 +54,10 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
     conn: websocketConnection,
     role,
   };
-  console.log(`New Connection accepted ${screenId}. Total Clients: ${Object.keys(wsConnections).length}`);
+  totalConnections = Object.keys(wsConnections).length;
+  console.log(
+    `New Connection accepted ${screenId}. Total Clients: ${totalConnections}`
+  );
   websocketConnection.send(
     JSON.stringify({
       type: "init",
@@ -67,6 +74,12 @@ wsServer.on("connection", (websocketConnection, connectionRequest) => {
     })
   );
   openRoles.delete(role);
+  if (totalConnections === 2) {
+    for (let screenId in wsConnections) {
+      let conn = wsConnections[screenId].conn;
+      conn.send(JSON.stringify({ type: "start-timer" }));
+    }
+  }
   websocketConnection.on("message", (data) => {
     data = JSON.parse(data);
     // console.log("recvd: ", JSON.stringify(data));

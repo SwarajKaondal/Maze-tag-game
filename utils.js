@@ -60,6 +60,13 @@ var textureCoordBuffers = [];
 // ASSIGNMENT HELPER FUNCTIONS
 
 let winnerAnnounced = false;
+let bootsRotationAngle = 0;
+let bootRotationSpeed = 3;
+const BOOT_POWER_TIME = 10 * 1000;
+let bootsEnabled = false;
+let bootTimeLeft = 0;
+const ESCAPE_TIME = 5 * 60 * 1000;
+let timeElapsed = 0;
 
 // get the JSON file from the passed URL
 function getJSONFile(url, descr) {
@@ -329,6 +336,8 @@ function handleKeyDown(event) {
 
 var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
 var minimapCanvas = document.getElementById("minimap");
+var bootTimeDisplay = document.getElementById("boots-time");
+var mainDisplay = document.getElementById("main-data");
 
 let minimap = minimapCanvas.getContext("2d");
 const aspectRatio = canvas.width / canvas.height;
@@ -650,12 +659,19 @@ function sendCurrentPosition() {
 }
 
 function setHeartBeatVolume() {
-  if (currentEnemyPosition !== undefined) {
-    let distance = euclideanDistance(Eye[0], Eye[2], currentEnemyPosition.position.Eye[0], currentEnemyPosition.position.Eye[2]);
+  if (currentEnemyPosition?.position?.Eye !== undefined) {
+    let distance = euclideanDistance(
+      Eye[0],
+      Eye[2],
+      currentEnemyPosition.position.Eye[0],
+      currentEnemyPosition.position.Eye[2]
+    );
     heartbeatAudio.volume = 1 - Math.min(distance / (blockLength * 6), 1);
   }
 }
 // render the loaded model
+let showBoots = true;
+
 function renderModels() {
   setHeartBeatVolume();
   if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
@@ -671,8 +687,20 @@ function renderModels() {
     }
     winnerAnnounced = true;
   }
-  let renderingTransparent = false;
+  setTimeout(() => {
+    bootsRotationAngle += bootRotationSpeed;
+    if (bootsRotationAngle >= 360) {
+      bootsRotationAngle = 0;
+    }
+  }, 20);
   function makeModelTransform(currModel) {
+    if (currModel.id.startsWith("Boot")) {
+      currModel.xAxis = vec3.fromValues(
+        Math.sin(bootsRotationAngle * (Math.PI / 180)),
+        0,
+        Math.cos(bootsRotationAngle * (Math.PI / 180))
+      );
+    }
     if (["Frog", "Thom"].includes(currModel.id) && currentEnemyPosition !== undefined) {
       if (gameOver) {
         Eye = vec3.fromValues(blockLength * 1.825 + 0.1, blockLength * 4.325, -blockLength * 0.9765);
@@ -787,6 +815,9 @@ function renderModels() {
 
     // make model transform, add to view project
     makeModelTransform(currSet);
+    if (removedShoes[currSet?.id] === true) {
+      return;
+    }
     mat4.multiply(pvmMatrix, pvMatrix, mMatrix); // project * view * model
     gl.uniformMatrix4fv(mMatrixULoc, false, mMatrix); // pass in the m matrix
     gl.uniformMatrix4fv(pvmMatrixULoc, false, pvmMatrix); // pass in the hpvm matrix
@@ -933,6 +964,9 @@ function loadStuff() {
 }
 
 function main() {
+  if (role === "seeker") {
+    viewDelta *= 1.5;
+  }
   minimapCanvas.height = (gridSize * 2 + 2) * 10;
   minimapCanvas.width = (gridSize * 2 + 2) * 10;
   console.log(role);
@@ -1012,7 +1046,20 @@ function checkAdjacentBlocks(mazeArray, currPosition) {
     rightForward: false,
     leftForward: false,
   };
-  if ((currPosition[1] > 0 && blockingWalls.includes(mazeArray[currPosition[1] - 1][currPosition[0]])) || currPosition[1] == 0) {
+  if (mazeArray[currPosition[1]][currPosition[0]] === "p") {
+    mazeArray[currPosition[1]][currPosition[0]] = ".";
+    let bootId = `Boot-${currPosition[1]}-${currPosition[0]}`;
+    removedShoes[bootId] = true;
+    sendShoeCollectedMessage(bootId, currPosition[1], currPosition[0]);
+    handleShoeCollection();
+  }
+  if (
+    (currPosition[1] > 0 &&
+      blockingWalls.includes(
+        mazeArray[currPosition[1] - 1][currPosition[0]]
+      )) ||
+    currPosition[1] == 0
+  ) {
     adjacentBlocks.back = true;
   }
   if (
@@ -1095,4 +1142,52 @@ function sendGameOverMessage(winner) {
       })
     );
   }
+}
+
+function sendShoeCollectedMessage(bootId, i, j) {
+  if (gameConnected === true) {
+    socket.send(
+      JSON.stringify({
+        type: "shoe_collected",
+        bootId,
+        position: [i, j],
+      })
+    );
+  }
+}
+
+const BOOT_DISPLAY_REFRESH = 100;
+function handleShoeCollection() {
+  bootTimeLeft += BOOT_POWER_TIME;
+
+  if (!bootsEnabled) {
+    viewDelta *= 2;
+    bootsEnabled = setInterval(() => {
+      bootTimeLeft -= BOOT_DISPLAY_REFRESH;
+
+      bootTimeDisplay.innerHTML = `You have collected Phase Boots.</br>
+    Time Remaining: ${bootTimeLeft / 1000}`;
+      if (bootTimeLeft <= 0) {
+        clearTimeout(bootsEnabled);
+        bootTimeDisplay.innerHTML = "";
+        bootsEnabled = false;
+        viewDelta /= 2;
+        return;
+      }
+    }, BOOT_DISPLAY_REFRESH);
+  }
+}
+
+function startTimer() {
+  timeElapsed = 0;
+  let timerInterval;
+  timerInterval = setInterval(() => {
+    timeElapsed += BOOT_DISPLAY_REFRESH;
+    if (timeElapsed >= ESCAPE_TIME) {
+      clearInterval(timerInterval);
+    }
+    mainDisplay.innerHTML = `You are <b>${role}</b>. You have got ${
+      (ESCAPE_TIME - timeElapsed) / 1000
+    }s to ${role === "seeker" ? "catch the frog" : "escape tom."}`;
+  }, BOOT_DISPLAY_REFRESH);
 }
