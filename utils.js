@@ -39,6 +39,9 @@ const MOUSE_SENS = 700;
 var footstepAudio;
 var heartbeatAudio;
 var showMiniMap = false;
+var winnerAnimationDelta = 0.08;
+var winnerAnimationOffset = 0;
+var WINNER_ANIMATION_THRESHOLD = 1;
 
 const minimapStates = {
   ACTIVE: "map is active",
@@ -910,18 +913,54 @@ function renderModels() {
           blockLength * 0.74931
         );
         if (currModel.id == "Frog") {
-          currModel.translation = vec3.fromValues(
-            blockLength * 1,
-            blockLength * 4,
-            blockLength * 1.5
-          );
+          if (winnerRole === "runner") {
+            winnerAnimationOffset += winnerAnimationDelta;
+            if (
+              winnerAnimationOffset > WINNER_ANIMATION_THRESHOLD ||
+              winnerAnimationOffset < -WINNER_ANIMATION_THRESHOLD
+            ) {
+              winnerAnimationDelta = -winnerAnimationDelta;
+            }
+            currModel.translation = vec3.fromValues(
+              blockLength * 1,
+              blockLength * 4 +
+                0.3 +
+                7 * Math.sin((winnerAnimationOffset * Math.PI) / 180),
+              blockLength * 1.5
+            );
+          } else {
+            currModel.translation = vec3.fromValues(
+              blockLength * 1,
+              blockLength * 4,
+              blockLength * 1.5
+            );
+          }
+
           currModel.xAxis = vec3.fromValues(0.158, 0, -0.9872);
         } else {
-          currModel.translation = vec3.fromValues(
-            blockLength * 2.5,
-            blockLength * 4,
-            blockLength * 1.5
-          );
+          if (winnerRole === "seeker") {
+            winnerAnimationOffset += winnerAnimationDelta;
+            if (
+              winnerAnimationOffset > WINNER_ANIMATION_THRESHOLD ||
+              winnerAnimationOffset < -WINNER_ANIMATION_THRESHOLD
+            ) {
+              winnerAnimationDelta = -winnerAnimationDelta;
+            }
+            currModel.translation = vec3.fromValues(
+              blockLength * 2.5,
+              blockLength * 4 +
+                0.3 +
+                7 * Math.sin((winnerAnimationOffset * Math.PI) / 180),
+              blockLength * 1.5
+            );
+          } else {
+            currModel.translation = vec3.fromValues(
+              blockLength * 2.5,
+              blockLength * 4,
+              blockLength * 1.5
+            );
+          }
+
           currModel.xAxis = vec3.fromValues(0.158, 0, -0.9872);
         }
         minimap.clearRect(0, 0, minimapCanvas.width, minimapCanvas.height);

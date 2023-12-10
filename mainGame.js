@@ -14,6 +14,7 @@ var blockingWalls = ["#"];
 var gridSize;
 var removedShoes = {};
 let timerInterval;
+var winnerRole;
 
 function initGame() {
   socket = new WebSocket("ws://localhost:3001/ws");
@@ -43,7 +44,7 @@ function initGame() {
       main();
     } else if (socketData?.type === "game_over") {
       gameOver = true;
-      let winnerRole = socketData?.winner;
+      winnerRole = socketData?.winner;
       winner = winnerRole === role;
       clearInterval(timerInterval);
       mainDisplay.innerHTML = "";
