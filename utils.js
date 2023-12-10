@@ -66,6 +66,8 @@ let bootRotationSpeed = 3;
 const BOOT_POWER_TIME = 10 * 1000;
 let bootsEnabled = false;
 let bootTimeLeft = 0;
+const ESCAPE_TIME = 5 * 60 * 1000;
+let timeElapsed = 0;
 
 // get the JSON file from the passed URL
 function getJSONFile(url, descr) {
@@ -442,6 +444,7 @@ function handleKeyDown(event) {
 var canvas = document.getElementById("myWebGLCanvas"); // create a js canvas
 var minimapCanvas = document.getElementById("minimap");
 var bootTimeDisplay = document.getElementById("boots-time");
+var mainDisplay = document.getElementById("main-data");
 
 let minimap = minimapCanvas.getContext("2d");
 const aspectRatio = canvas.width / canvas.height;
@@ -842,7 +845,7 @@ function sendCurrentPosition() {
 }
 
 function setHeartBeatVolume() {
-  if (currentEnemyPosition !== undefined) {
+  if (currentEnemyPosition?.position?.Eye !== undefined) {
     let distance = euclideanDistance(
       Eye[0],
       Eye[2],
@@ -1410,4 +1413,18 @@ function handleShoeCollection() {
       }
     }, BOOT_DISPLAY_REFRESH);
   }
+}
+
+function startTimer() {
+  timeElapsed = 0;
+  let timerInterval;
+  timerInterval = setInterval(() => {
+    timeElapsed += BOOT_DISPLAY_REFRESH;
+    if (timeElapsed >= ESCAPE_TIME) {
+      clearInterval(timerInterval);
+    }
+    mainDisplay.innerHTML = `You are <b>${role}</b>. You have got ${
+      (ESCAPE_TIME - timeElapsed) / 1000
+    }s to ${role === "seeker" ? "catch the frog" : "escape tom."}`;
+  }, BOOT_DISPLAY_REFRESH);
 }

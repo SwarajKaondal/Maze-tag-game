@@ -21,6 +21,9 @@ function initGame() {
   };
   socket.onmessage = function (event) {
     let socketData = JSON.parse(event.data);
+    if (socketData?.type === "start-timer") {
+      startTimer();
+    }
     if (socketData?.type === "init") {
       maze = socketData?.data?.maze;
       map = socketData?.data?.map;
