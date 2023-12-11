@@ -553,9 +553,9 @@ export function getStartPositions(maze, blockLength) {
     for (let x = 0; x < maze[0].length; x++) {
       if (maze[y][x] === ".") {
         runnerPosition = [
-          y * blockLength + blockLength / 2,
+          0 * blockLength + blockLength / 2,
           blockLength / 2,
-          x * blockLength + blockLength / 2,
+          0 * blockLength + blockLength / 2,
         ];
       }
     }

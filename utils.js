@@ -869,10 +869,17 @@ function setHeartBeatVolume() {
 let showBoots = true;
 
 function renderModels() {
-  setHeartBeatVolume();
-  if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
-    heartbeatAudio.play();
+  if (gameOver) {
+    footstepAudio.volume = 0;
+    heartbeatAudio.volume = 0;
   }
+  if (!gameOver) {
+    setHeartBeatVolume();
+    if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
+      heartbeatAudio.play();
+    }
+  }
+
   // construct the model transform matrix, based on model state
 
   if (gameOver && !winnerAnnounced) {

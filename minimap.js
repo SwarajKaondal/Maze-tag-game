@@ -169,7 +169,7 @@ function loadCounter() {
 
     drawCountdown(timeRemaining);
 
-    if (timeRemaining > 0) {
+    if (timeRemaining > 0 && !gameOver) {
       requestAnimationFrame(updateCountdown);
     } else {
       minimapState = minimapStates.READY;

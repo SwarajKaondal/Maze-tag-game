@@ -17,7 +17,7 @@ let timerInterval;
 var winnerRole;
 
 function initGame() {
-  socket = new WebSocket("ws://localhost:3001/ws");
+  socket = new WebSocket("ws://192.168.86.51:3001/ws");
   socket.onopen = function (e) {
     console.log("connected to server");
   };
