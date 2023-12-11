@@ -1538,6 +1538,11 @@ function startTimer() {
     timeElapsed += BOOT_DISPLAY_REFRESH;
     if (timeElapsed >= ESCAPE_TIME) {
       clearInterval(timerInterval);
+      if (role === "runner") {
+        gameOver = true;
+        winner = false;
+        sendGameOverMessage("seeker");
+      }
     }
     mainDisplay.innerHTML = `You are <b>${role}</b>. You have got ${
       (ESCAPE_TIME - timeElapsed) / 1000
