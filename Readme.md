@@ -2,12 +2,12 @@
 
 1. Run `npm install` in the root directory
 2. Run `npm run server` in the same directory
-3. You will need to set your IP address in place of `localhost` in `mainGame.js`.
+3. You will need to set your IP address in place of `localhost` in `mainGame.js` on line 20.
 4. visit `<your-ip>:3000`on a browser from two different PCs (or same) that are on the same LAN
 
 # Game Description
 
-Chase is a competitive game of tag where the `seeker`'s goal is to catch the runner before they can escape, while the `runner`'s goal is to escape the backrooms before the seeker can get them, AND the timer runs out. There is a power up scattered randomly across the map that increases the speed of the player that collects it. Also, the runner can run `through transparent walls` while the seeker can't.
+Chase is a competitive game of tag where the `seeker`'s goal is to catch the runner before they can escape, while the `runner`'s goal is to escape the backrooms before the seeker can get them, AND the timer runs out. There is a power up scattered randomly across the map that increases the speed of the player that collects it. Also, the runner can run `through transparent walls` while the seeker can't. The seeker is slightly faster than the runner to keep things interesting.
 
 # Features
 
