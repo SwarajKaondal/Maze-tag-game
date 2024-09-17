@@ -1,3 +1,10 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/Javascript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E" alt="JavaScript Badge">
+  <img src="https://img.shields.io/badge/Blender-EEA860?style=for-the-badge&logo=blender&logoColor=F5792A" alt="Blender Badge">
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js Badge">
+</p>
+
+
 # Steps to Run
 
 1. Run `npm install` in the root directory
