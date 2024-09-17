@@ -20,3 +20,10 @@ Chase is a competitive game of tag where the `seeker`'s goal is to catch the run
 7. Shoe animation (rotation)
 8. Logic to block movement through walls
 9. Transformed .obj files with textures to our game compatible formats
+
+# Play the Game On
+https://maze-tag-game-1.onrender.com/
+
+# Demo
+[![Watch the video](https://img.youtube.com/vi/jdLetaoP4IM/maxresdefault.jpg)](https://youtu.be/jdLetaoP4IM)
+
