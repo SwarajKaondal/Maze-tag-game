@@ -17,7 +17,7 @@ let timerInterval;
 var winnerRole;
 
 function initGame() {
-  socket = new WebSocket("wss://threed-tag-game.onrender.com/ws");
+  socket = new WebSocket("wss://maze-tag-game.onrender.com/ws");
   socket.onopen = function (e) {
     console.log("connected to server");
   };
