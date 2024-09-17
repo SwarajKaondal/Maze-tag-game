@@ -875,7 +875,7 @@ function renderModels() {
   }
   if (!gameOver) {
     setHeartBeatVolume();
-    if (heartbeatAudio.paused && currentEnemyPosition !== undefined) {
+    if (heartbeatAudio.paused) {
       heartbeatAudio.play();
     }
   }
@@ -904,10 +904,7 @@ function renderModels() {
         Math.cos(bootsRotationAngle * (Math.PI / 180))
       );
     }
-    if (
-      ["Frog", "Thom"].includes(currModel.id) &&
-      currentEnemyPosition !== undefined
-    ) {
+    if (["Frog", "Thom"].includes(currModel.id)) {
       if (gameOver) {
         Eye = vec3.fromValues(
           blockLength * 1.825 + 0.1,
@@ -982,7 +979,7 @@ function renderModels() {
           minimapCanvas.width / 2,
           minimapCanvas.height / 2
         );
-      } else {
+      } else if (currentEnemyPosition.position !== undefined) {
         currModel.translation = vec3.fromValues(
           ...Object.values(currentEnemyPosition.position.Eye)
         );
@@ -1456,6 +1453,9 @@ function euclideanDistance(x1, y1, x2, y2) {
 }
 
 function checkCatch() {
+  if (currentEnemyPosition === undefined) {
+    return;
+  }
   let eyeGrid = [
     Math.floor(Eye[0] / blockLength),
     0,
