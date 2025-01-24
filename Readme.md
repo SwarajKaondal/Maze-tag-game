@@ -30,6 +30,7 @@ Chase is a competitive game of tag where the `seeker`'s goal is to catch the run
 
 # Play the Game On
 https://maze-tag-game-1.onrender.com/
+
 Note: Open on two tabs if nothing loads on the first one.
 # Demo
 [![Watch the video](https://img.youtube.com/vi/jdLetaoP4IM/maxresdefault.jpg)](https://youtu.be/jdLetaoP4IM)
